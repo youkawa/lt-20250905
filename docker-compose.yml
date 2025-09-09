@@ -1,0 +1,81 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    build: ./apps/api
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://app:app@db:5432/app
+      PORT: 3001
+      NOTEBOOK_SERVICE_URL: http://notebook-service:8000
+      EXPORT_ASYNC: "true"
+      EXPORT_QUEUE: "bull"
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uploads:/app/uploads
+
+  notebook-service:
+    build: ./apps/notebook-service
+    environment:
+      APP_VERSION: 0.1.0
+      EXPORT_OUT_DIR: /app/exports
+    volumes:
+      - ./exports:/app/exports
+      - ./uploads:/app/uploads:ro
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./apps/frontend
+    depends_on:
+      - api
+      - notebook-service
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      NEXT_PUBLIC_NOTEBOOK_BASE_URL: http://localhost:8000
+      NEXT_PUBLIC_USER_ID: alice
+    ports:
+      - "3000:3000"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3002:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+volumes:
+  db-data:

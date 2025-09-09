@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "ignorePatterns": ["**/dist/**", "**/.next/**"],
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx", "**/*.js"],
+      "env": { "es2022": true, "node": true, "browser": true, "jest": true },
+      "extends": ["eslint:recommended"],
+      "parserOptions": { "sourceType": "module", "ecmaVersion": "latest" },
+      "rules": {
+        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+      }
+    }
+  ]
+}

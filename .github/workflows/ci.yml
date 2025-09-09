@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  js-lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install root deps
+        run: npm i -g npm@^10 && npm -v
+      - name: Frontend install and lint
+        working-directory: apps/frontend
+        run: |
+          npm install
+          npm run lint
+          npm test --if-present
+      - name: Frontend E2E (Playwright)
+        working-directory: apps/frontend
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
+          NEXT_PUBLIC_NOTEBOOK_BASE_URL: http://notebook
+          NEXT_PUBLIC_USER_ID: u1
+        run: |
+          npx playwright install --with-deps
+          npx playwright test
+      - name: API install and test
+        working-directory: apps/api
+        run: |
+          npm install
+          npm run lint
+          npm test
+
+  python-lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        working-directory: apps/notebook-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest black ruff
+      - name: Lint & Format (check)
+        working-directory: apps/notebook-service
+        run: |
+          black --check .
+          ruff check .
+      - name: Tests
+        working-directory: apps/notebook-service
+        run: pytest -q
+  api-bullmq:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install API deps (with bullmq)
+        working-directory: apps/api
+        run: |
+          npm install
+      - name: Run BullMQ integration test
+        working-directory: apps/api
+        env:
+          CI_BULL_TEST: 'true'
+          REDIS_URL: redis://127.0.0.1:6379
+          EXPORT_ASYNC: 'true'
+          EXPORT_QUEUE: bull
+        run: |
+          npx jest --runTestsByPath src/modules/export-queue/bull.e2e.spec.ts --detectOpenHandles --forceExit

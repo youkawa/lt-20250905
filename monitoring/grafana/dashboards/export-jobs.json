@@ -1,0 +1,39 @@
+{
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Jobs Enqueued",
+      "gridPos": {"x": 0, "y": 0, "w": 8, "h": 4},
+      "targets": [{"expr": "sum(export_jobs_enqueued_total)"}]
+    },
+    {
+      "type": "stat",
+      "title": "Jobs Completed",
+      "gridPos": {"x": 8, "y": 0, "w": 8, "h": 4},
+      "targets": [{"expr": "sum(export_jobs_completed_total)"}]
+    },
+    {
+      "type": "stat",
+      "title": "Jobs Failed",
+      "gridPos": {"x": 16, "y": 0, "w": 8, "h": 4},
+      "targets": [{"expr": "sum(export_jobs_failed_total)"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Job Duration (ms)",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(export_job_duration_ms_bucket[5m])) by (le))"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Failed by Code",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(export_jobs_failed_by_code_total[5m])) by (error_code)"}]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1,
+  "title": "Export Jobs"
+}
+
