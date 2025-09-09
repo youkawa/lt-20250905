@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  notebook-service:
+    build:
+      context: ./services/notebook-service
+    container_name: notebook-service
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./services/notebook-service:/app:delegated
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  main-api:
+    build:
+      context: ./services/main-api
+    container_name: main-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/main-api:/app:delegated
+    depends_on:
+      - postgres
+  frontend:
+    build:
+      context: ./services/frontend
+    container_name: frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/frontend:/app:delegated
+    depends_on:
+      - main-api
+  postgres:
+    image: postgres:15-alpine
+    container_name: lt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ltdev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
+    name: lt-postgres-data

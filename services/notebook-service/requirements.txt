@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+nbformat
+python-pptx
+kaleido
+pydantic
+pytest
+httpx
+python-multipart
