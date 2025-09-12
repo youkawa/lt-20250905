@@ -21,7 +21,7 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.1",
     "plotly.js-dist-min": "^2.34.0",
-    "@datalayer/jupyter-ui": "^0.9.2"
+    "@datalayer/jupyter-react": "^0.9.2"
   },
   "devDependencies": {
     "@types/node": "20.12.12",
