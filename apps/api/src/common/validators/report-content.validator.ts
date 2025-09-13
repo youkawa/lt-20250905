@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 function isCodeOutput(o: any): boolean {
   return o && typeof o === 'object' && typeof o.output_type === 'string';
@@ -23,17 +23,17 @@ export function isReportContentItem(v: any): boolean {
 }
 
 export function IsReportContentItem(options?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: unknown, propertyName: string) {
     registerDecorator({
       name: 'IsReportContentItem',
       target: object.constructor,
       propertyName,
       options,
       validator: {
-        validate(value: any, _args: ValidationArguments) {
+        validate(value: any) {
           return isReportContentItem(value);
         },
-        defaultMessage(_args: ValidationArguments) {
+        defaultMessage() {
           return 'Invalid ReportContentItem shape';
         },
       },

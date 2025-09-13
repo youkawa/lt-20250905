@@ -1,8 +1,9 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { IsReportContentItem } from '../../common/validators/report-content.validator';
 import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
 
 import { ReportContentItemDto } from '../../common/dto/report-content.dto';
+import { IsReportContentItem } from '../../common/validators/report-content.validator';
+
 
 export type ExportContentItem = unknown;
 export type ExportMetadata = Record<string, unknown>;
