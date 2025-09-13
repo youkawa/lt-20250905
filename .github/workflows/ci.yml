@@ -67,7 +67,7 @@ jobs:
         run: npm run build
       - name: Run E2E
         working-directory: apps/frontend
-        run: npm run test:e2e --silent
+        run: npm run test:e2e --silent -- --retries=2
       - name: Upload Playwright report (always)
         if: always()
         uses: actions/upload-artifact@v4

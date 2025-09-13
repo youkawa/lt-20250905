@@ -173,6 +173,14 @@ cd ../..
 - E2Eは「ページ内 fetch スタブ」を使用し、Next.js の静的アセット/SSRを妨げない形でAPI応答をモックします。
 - Lintは厳格運用（警告ゼロ）。`npm run lint:fix` での自動整形を推奨します。
 
+### ローカルでCI相当を一括実行
+
+```bash
+# ルートで実行
+npm run ci:local
+```
+（Frontendのbuild+Vitest+Playwright、APIのbuild+Jest、Notebookのpytest、Lint(frontend/api) を順番に実行します）
+
 ---
 
 ## ❓ FAQ
