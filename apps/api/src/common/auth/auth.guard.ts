@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from './public.decorator';
-import jwt from 'jsonwebtoken';
+import { verify, JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -20,8 +20,9 @@ export class AuthGuard implements CanActivate {
       const token = authz.slice(7).trim();
       const secret = process.env.JWT_SECRET || 'dev-secret';
       try {
-        const payload = jwt.verify(token, secret) as any;
-        const sub = payload?.sub || payload?.userId || payload?.id;
+        const payload = verify(token, secret) as JwtPayload | string;
+        const obj = typeof payload === 'string' ? {} : payload;
+        const sub = (obj as any)?.sub || (obj as any)?.userId || (obj as any)?.id;
         if (sub) {
           req.user = { id: String(sub) };
           return true;

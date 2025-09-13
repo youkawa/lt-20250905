@@ -8,7 +8,7 @@ export interface ExportJobRecord {
   error?: string;
   errorCode?: string;
   downloadUrl?: string;
-  payload?: any;
+  payload?: unknown;
   attemptsMade?: number;
   attemptsMax?: number;
   progress?: number;
@@ -23,7 +23,7 @@ export class ExportQueueService {
   private queue: ExportJobRecord[] = [];
   private jobs = new Map<string, ExportJobRecord>();
 
-  enqueueExport(payload: any): ExportJobRecord {
+  enqueueExport(payload: unknown): ExportJobRecord {
     const jobId = Math.random().toString(16).slice(2);
     const now = new Date().toISOString();
     const rec: ExportJobRecord = { jobId, status: 'queued', payload, attemptsMade: 0, attemptsMax: 1, progress: 0, createdAt: now };
@@ -35,7 +35,7 @@ export class ExportQueueService {
   getJob(jobId: string): ExportJobRecord | undefined {
     const j = this.jobs.get(jobId);
     if (!j) return undefined;
-    const { payload, ...rest } = j;
+    const { payload: _payload, ...rest } = j;
     return { ...rest } as ExportJobRecord;
   }
 
@@ -43,7 +43,7 @@ export class ExportQueueService {
    * Process one job using given processor. Intended for a worker loop.
    */
   async processNext(
-    processor: (payload: any) => Promise<{ status: 'completed' | 'failed'; downloadUrl?: string; error?: string; errorCode?: string }>,
+    processor: (payload: unknown) => Promise<{ status: 'completed' | 'failed'; downloadUrl?: string; error?: string; errorCode?: string }>,
   ): Promise<ExportJobRecord | undefined> {
     const job = this.queue.shift();
     if (!job) return undefined;
@@ -61,16 +61,17 @@ export class ExportQueueService {
         job.error = res.error || 'failed';
         job.errorCode = res.errorCode || 'WORKER_FAILED';
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as Error;
       job.status = 'failed';
-      job.error = e?.message || 'failed';
+      job.error = err?.message || 'failed';
       job.errorCode = 'WORKER_THROW';
     }
     job.finishedAt = new Date().toISOString();
     if (job.startedAt && job.finishedAt) job.durationMs = Math.max(0, new Date(job.finishedAt).getTime() - new Date(job.startedAt).getTime());
     this.jobs.set(job.jobId, job);
     // return public shape
-    const { payload, ...rest } = job;
+    const { payload: _payload2, ...rest } = job;
     return { ...rest } as ExportJobRecord;
   }
 }

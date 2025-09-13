@@ -1,5 +1,5 @@
 import { AuthGuard } from './auth.guard';
-import jwt from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 
 const makeCtx = (headers: Record<string, string> = {}) => ({
   switchToHttp: () => ({
@@ -46,7 +46,7 @@ describe('AuthGuard', () => {
   it('accepts JWT bearer token and sets user from sub', () => {
     const reflector = { getAllAndOverride: jest.fn(() => false) } as any;
     const guard = new AuthGuard(reflector);
-    const token = jwt.sign({ sub: 'u-jwt' }, process.env.JWT_SECRET || 'dev-secret');
+    const token = sign({ sub: 'u-jwt' }, process.env.JWT_SECRET || 'dev-secret');
     const ctx = {
       switchToHttp: () => ({ getRequest: () => ({ headers: { authorization: `Bearer ${token}` } }) }),
       getHandler: () => ({}),

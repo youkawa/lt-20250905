@@ -13,7 +13,9 @@ export class ExportWorkerService {
    */
   async tickOnce(): Promise<void> {
     const result = await this.queue.processNext(async (payload) => {
-      const userId = payload?.userId as string | undefined;
+      type Payload = { userId?: string } & Record<string, unknown>;
+      const p = (payload as Payload) || {};
+      const userId = typeof p.userId === 'string' ? p.userId : undefined;
       const res = await this.exportsService.startExport(payload, userId);
       if (res?.status === 'completed') { try { this.metrics.jobsCompleted.inc(); } catch (_) {} return { status: 'completed', downloadUrl: res.downloadUrl }; }
       if (res?.status === 'failed') { try { this.metrics.jobsFailed.inc(); } catch (_) {} return { status: 'failed', error: res.error, errorCode: res.errorCode }; }
