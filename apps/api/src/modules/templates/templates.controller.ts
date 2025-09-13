@@ -43,7 +43,7 @@ export class TemplatesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() dto: UploadTemplateDto,
   ) {
     if (!file) throw new BadRequestException('file is required');

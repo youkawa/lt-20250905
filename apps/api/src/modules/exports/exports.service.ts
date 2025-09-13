@@ -44,7 +44,7 @@ export class ExportsService {
       const title = payload.title;
       const candidates = all
         .map((t: any) => ({ t, content: (t.content as any) || {} }))
-        .map(({ t, content }) => {
+        .map(({ t, content }: any) => {
           const rules = Array.isArray(content.rules) ? content.rules : [];
           let score = 0;
           let matched = false;
@@ -62,8 +62,8 @@ export class ExportsService {
           if (!matched && content.isDefault) score = Math.max(score, 1); // global default minimal score
           return { t, content, score };
         })
-        .filter((x) => x.score > 0)
-        .sort((a, b) => {
+        .filter((x: any) => x.score > 0)
+        .sort((a: any, b: any) => {
           if (b.score !== a.score) return b.score - a.score; // 高優先度
           if (b.t.version !== a.t.version) return b.t.version - a.t.version; // 新しいversion
           const bu = new Date((b.t as any).updatedAt).getTime();

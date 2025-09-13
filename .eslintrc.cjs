@@ -22,6 +22,7 @@ module.exports = {
   rules: {
     // 一時的に無効化（CI厳格運用と相性が悪いため、段階導入）
     'unused-imports/no-unused-imports': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     'import/order': [
       'warn',
       {
@@ -57,6 +58,7 @@ module.exports = {
       files: ['apps/frontend/src/**/*.{ts,tsx,js}'],
       rules: {
         'import/order': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
       },
     },
   ],

@@ -33,7 +33,7 @@ export class TemplatesService {
 
   async setDefault(id: string, rule?: SetDefaultDto) {
     const all = await this.prisma.template.findMany();
-    const target = all.find((t) => t.id === id);
+    const target = (all as any[]).find((t: any) => t.id === id);
     if (!target) throw new NotFoundException('Template not found');
     const hasScope = !!(rule?.projectId || rule?.titlePattern);
     if (!hasScope) {

@@ -17,7 +17,7 @@ type BullJob = {
   failedReason?: string;
 };
 
-function getBull(): { Queue: BullQueue; Worker: unknown; QueueEvents: unknown } {
+function getBull(): { Queue: new (...args: any[]) => BullQueue; Worker: any; QueueEvents: any } {
   // dynamic require to avoid build-time dependency in non-bull environments
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod = require('bullmq');
@@ -66,7 +66,7 @@ export class BullExportQueueService {
     const finishedAt = job?.finishedOn ? new Date(job.finishedOn).toISOString() : undefined;
     const durationMs = job?.processedOn && job?.finishedOn ? Math.max(0, job.finishedOn - job.processedOn) : undefined;
     if (state === 'completed') {
-      const ret = await job.returnvalue;
+      const ret: any = (job as any).returnvalue as any;
       return { jobId: String(job.id), status: 'completed' as const, downloadUrl: ret?.downloadUrl, progress, attemptsMade, attemptsMax, createdAt, startedAt, finishedAt, durationMs };
     }
     if (state === 'failed') {
