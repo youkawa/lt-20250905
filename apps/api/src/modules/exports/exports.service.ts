@@ -43,7 +43,7 @@ export class ExportsService {
       const projectId = payload.metadata?.projectId as string | undefined;
       const title = payload.title;
       const candidates = all
-        .map((t) => ({ t, content: (t.content as any) || {} }))
+        .map((t: any) => ({ t, content: (t.content as any) || {} }))
         .map(({ t, content }) => {
           const rules = Array.isArray(content.rules) ? content.rules : [];
           let score = 0;

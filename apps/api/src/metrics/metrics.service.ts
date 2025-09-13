@@ -5,11 +5,12 @@ import { Counter, Histogram, Registry, collectDefaultMetrics } from './prom-clie
 @Injectable()
 export class MetricsService {
   registry = new Registry();
-  jobsEnqueued: Counter;
-  jobsCompleted: Counter;
-  jobsFailed: Counter;
-  jobsFailedByCode: Counter;
-  jobDuration: Histogram;
+  // Use instance types derived from constructor values
+  jobsEnqueued!: InstanceType<typeof Counter>;
+  jobsCompleted!: InstanceType<typeof Counter>;
+  jobsFailed!: InstanceType<typeof Counter>;
+  jobsFailedByCode!: InstanceType<typeof Counter>;
+  jobDuration!: InstanceType<typeof Histogram>;
 
   constructor() {
     collectDefaultMetrics({ register: this.registry });

@@ -17,7 +17,7 @@ export class ExportWorkerService {
       type Payload = { userId?: string } & Record<string, unknown>;
       const p = (payload as Payload) || {};
       const userId = typeof p.userId === 'string' ? p.userId : undefined;
-      const res = await this.exportsService.startExport(payload, userId);
+      const res: any = await this.exportsService.startExport(p as any, userId);
       if (res?.status === 'completed') {
         try { this.metrics.jobsCompleted.inc(); } catch { /* noop */ }
         return { status: 'completed', downloadUrl: res.downloadUrl };

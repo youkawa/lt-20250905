@@ -11,7 +11,14 @@ module.exports = {
     'plugin:import/typescript',
     'prettier',
   ],
-  settings: { 'import/resolver': { typescript: true } },
+  settings: {
+    'import/resolver': {
+      typescript: {
+        // Resolve TS path aliases in each workspace
+        project: ['apps/frontend/tsconfig.json', 'apps/api/tsconfig.json'],
+      },
+    },
+  },
   rules: {
     // 一時的に無効化（CI厳格運用と相性が悪いため、段階導入）
     'unused-imports/no-unused-imports': 'off',

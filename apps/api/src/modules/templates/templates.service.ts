@@ -38,7 +38,7 @@ export class TemplatesService {
     const hasScope = !!(rule?.projectId || rule?.titlePattern);
     if (!hasScope) {
       // グローバル既定: 既存のisDefaultを全解除し、対象のみtrue
-      for (const t of all) {
+      for (const t of all as any[]) {
         const content = (t.content as Record<string, unknown>) || {};
         const next = { ...content } as Record<string, unknown>;
         next.isDefault = t.id === id;
