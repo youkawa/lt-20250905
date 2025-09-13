@@ -7,7 +7,7 @@ type MinimalPlotlyFigure = {
   layout?: Record<string, unknown>;
 };
 
-export function PlotlyOutput({ figure }: { figure: MinimalPlotlyFigure }) {
+export function PlotlyOutput({ figure }: { figure: unknown }) {
   const ref = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,8 +18,9 @@ export function PlotlyOutput({ figure }: { figure: MinimalPlotlyFigure }) {
         const Plotly = await import('plotly.js-dist-min');
         if (disposed) return;
         const el = ref.current!;
-        const data = figure?.data || [];
-        const layout = figure?.layout || {};
+        const f = figure as MinimalPlotlyFigure | undefined;
+        const data = f?.data || [];
+        const layout = f?.layout || {};
         await Plotly.newPlot(el, data, layout, { responsive: true });
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Plotlyの描画に失敗しました');
