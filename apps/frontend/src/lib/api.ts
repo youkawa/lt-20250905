@@ -102,7 +102,7 @@ export const ExportApi = {
 
 // Templates (admin)
 export const TemplatesApi = {
-  list(): Promise<Array<{ id: string; title: string; version: number; content?: unknown }>> {
+  list(): Promise<Array<{ id: string; title: string; version: number; content: any; createdAt: string }>> {
     const url = `${apiConfig.apiBaseUrl}/templates`;
     return request(url, { headers: buildAuthHeaders() });
   },
