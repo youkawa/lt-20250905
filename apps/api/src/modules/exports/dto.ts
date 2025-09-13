@@ -1,4 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { IsReportContentItem } from '../../common/validators/report-content.validator';
 import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
 
 import { ReportContentItemDto } from '../../common/dto/report-content.dto';
@@ -16,6 +17,7 @@ export class StartExportDto {
   @ApiProperty({ type: 'array', items: { oneOf: [
     { $ref: getSchemaPath(ReportContentItemDto) }
   ]}})
+  @IsReportContentItem({ each: true })
   content!: ExportContentItem[];
 
   @IsOptional()

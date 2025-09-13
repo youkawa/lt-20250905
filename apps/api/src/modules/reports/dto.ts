@@ -1,4 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { IsReportContentItem } from '../../common/validators/report-content.validator';
 import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { ReportContentItemDto } from '../../common/dto/report-content.dto';
@@ -19,6 +20,7 @@ export class CreateReportDto {
   // content は Json として受ける
   @IsArray()
   @ApiProperty({ type: 'array', items: { oneOf: [ { $ref: getSchemaPath(ReportContentItemDto) } ] } })
+  @IsReportContentItem({ each: true })
   content!: ReportContentItem[];
 
   @IsOptional()
@@ -32,6 +34,7 @@ export class UpdateReportDto {
   @IsOptional()
   @IsArray()
   @ApiProperty({ required: false, type: 'array', items: { oneOf: [ { $ref: getSchemaPath(ReportContentItemDto) } ] } })
+  @IsReportContentItem({ each: true })
   content?: ReportContentItem[];
 
   @IsOptional()
