@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ExportJobInfoDto } from '../../common/dto/export-job-info.dto';
 
 import { StartExportDto } from './dto';
 import { ExportsService } from './exports.service';
@@ -14,12 +15,7 @@ export class ExportsController {
 
   @Post('/exports')
   @ApiBody({ type: StartExportDto })
-  @ApiOkResponse({ description: 'Queued export job or immediate result', schema: {
-    oneOf: [
-      { type: 'object', properties: { jobId: { type: 'string' }, status: { type: 'string', enum: ['queued','processing','completed','failed'] } }, required: ['jobId','status'] },
-      { type: 'object', properties: { jobId: { type: 'string' }, status: { type: 'string' }, downloadUrl: { type: 'string' } }, required: ['jobId','status'] }
-    ]
-  }})
+  @ApiOkResponse({ description: 'Queued export job or immediate result', type: ExportJobInfoDto })
   start(@CurrentUser() user: { id: string } | undefined, @Body() dto: StartExportDto) {
     if (process.env.EXPORT_ASYNC === 'true') {
       const rec = this.queue.enqueueExport({ ...dto, userId: user?.id });
