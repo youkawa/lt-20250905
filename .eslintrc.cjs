@@ -45,11 +45,18 @@ module.exports = {
         'import/order': 'off',
       },
     },
-    // フロントエンド本体は段階導入のため import/order を一時的に無効化
+    // フロントエンド本体: import/order を有効化（自動整形で順序統一）
     {
       files: ['apps/frontend/src/**/*.{ts,tsx,js}'],
       rules: {
-        'import/order': 'off',
+        'import/order': [
+          'error',
+          {
+            'newlines-between': 'always',
+            alphabetize: { order: 'asc', caseInsensitive: true },
+            groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
+          },
+        ],
         // any は原則禁止（テスト/モックは別オーバーライドで緩和）
         '@typescript-eslint/no-explicit-any': 'error',
         // 段階導入: まず未使用変数をエラー化

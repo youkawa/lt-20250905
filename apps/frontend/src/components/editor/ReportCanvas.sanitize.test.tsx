@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+
 import { ReportCanvas } from './ReportCanvas';
 
 describe('ReportCanvas text_box sanitization', () => {

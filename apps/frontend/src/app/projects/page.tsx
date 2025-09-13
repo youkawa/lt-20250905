@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
 import { useProjectsStore } from '@/store/projects';
 
 export default function ProjectsPage() {

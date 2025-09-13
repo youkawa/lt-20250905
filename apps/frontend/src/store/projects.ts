@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import type { Project } from '@/types/api';
+
 import { ProjectsApi } from '@/lib/api';
+import type { Project } from '@/types/api';
 
 type ProjectsState = {
   projects: Project[];

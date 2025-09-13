@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from 'react';
-import { markdownToSafeHtml } from '@/lib/markdown';
-import type { ParsedNotebook } from '@/types/api';
+
 import { NotebookApi } from '@/lib/api';
 import { toDisplayMessage } from '@/lib/errors';
+import { markdownToSafeHtml } from '@/lib/markdown';
+import type { ParsedNotebook } from '@/types/api';
 
 export function NotebookSelectorPanel({
   onAddCell,

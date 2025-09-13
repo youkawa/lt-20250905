@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { vi } from 'vitest';
+
 import { ReportCanvas } from './ReportCanvas';
 
 // Mock dnd-kit modules to capture onDragEnd and bypass DOM APIs

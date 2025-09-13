@@ -1,8 +1,10 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState, type ComponentType } from 'react';
-import { PlotlyOutput } from './PlotlyOutput';
+
 import type { CodeOutput } from '@/types/api';
+
+import { PlotlyOutput } from './PlotlyOutput';
 
 type JupyterModule = { Output?: ComponentType<{ output: CodeOutput }> } | null;
 

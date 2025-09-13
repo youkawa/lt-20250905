@@ -16,9 +16,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useMemo } from 'react';
-import { markdownToSafeHtml } from '@/lib/markdown';
-import { sanitizeHtml } from '@/lib/html';
+
 import { JupyterOutput } from '@/components/jupyter/JupyterOutput';
+import { sanitizeHtml } from '@/lib/html';
+import { markdownToSafeHtml } from '@/lib/markdown';
 import type { ReportContentItem, CodeOutput } from '@/types/api';
 
 export function ReportCanvas({

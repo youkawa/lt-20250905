@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+
 import { TemplatesApi } from '@/lib/api';
-import type { Template } from '@/types/api';
 import { toDisplayMessage } from '@/lib/errors';
+import type { Template } from '@/types/api';
 
 // 型は共有定義を使用
 

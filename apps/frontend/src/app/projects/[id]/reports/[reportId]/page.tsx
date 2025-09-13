@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Report, Template, ReportContentItem, CodeOutput, ExportJobInfo } from '@/types/api';
-import { ReportsApi, ExportApi, ExportJobsApi, TemplatesApi } from '@/lib/api';
-import { useAutoSave } from '@/lib/hooks';
-import { toDisplayMessage } from '@/lib/errors';
-import { ReportCanvas } from '@/components/editor/ReportCanvas';
+import { useParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+
+import { Toast } from '@/components/core/Toast';
 import { NotebookSelectorPanel } from '@/components/editor/NotebookSelectorPanel';
 import { PreviewPanel } from '@/components/editor/PreviewPanel';
-import { Toast } from '@/components/core/Toast';
+import { ReportCanvas } from '@/components/editor/ReportCanvas';
+import { ReportsApi, ExportApi, ExportJobsApi, TemplatesApi } from '@/lib/api';
+import { toDisplayMessage } from '@/lib/errors';
+import { useAutoSave } from '@/lib/hooks';
+import type { Report, Template, ReportContentItem, CodeOutput, ExportJobInfo } from '@/types/api';
 
 type ContentItem = ReportContentItem; // Report.content の厳密表現
 

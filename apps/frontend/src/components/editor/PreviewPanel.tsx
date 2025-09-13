@@ -1,8 +1,8 @@
 "use client";
 
-import { markdownToSafeHtml } from '@/lib/markdown';
 import { JupyterOutput } from '@/components/jupyter/JupyterOutput';
 import { sanitizeHtml } from '@/lib/html';
+import { markdownToSafeHtml } from '@/lib/markdown';
 import type { ReportContentItem, CodeOutput } from '@/types/api';
 
 export function PreviewPanel({ items }: { items: ReportContentItem[] }) {
