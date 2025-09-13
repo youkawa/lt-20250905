@@ -9,6 +9,7 @@ import type {
   ParsedNotebook,
   User,
   Template,
+  ExportJobInfo,
 } from '../types/api';
 
 // Projects
@@ -81,7 +82,7 @@ export const NotebookApi = {
 
 // Export jobs via main API proxy
 export const ExportJobsApi = {
-  get(jobId: string): Promise<{ jobId: string; status: string; downloadUrl?: string; error?: string; errorCode?: string }> {
+  get(jobId: string): Promise<ExportJobInfo> {
     const url = `${apiConfig.apiBaseUrl}/export-jobs/${encodeURIComponent(jobId)}`;
     return request(url, { headers: buildAuthHeaders() });
   },

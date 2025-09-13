@@ -103,3 +103,16 @@ export type TextBoxItem = {
 };
 
 export type ReportContentItem = NotebookMarkdownItem | NotebookCodeItem | TextBoxItem;
+
+// Export job info (progress polling)
+export interface ExportJobInfo {
+  jobId: string;
+  status: string;
+  downloadUrl?: string;
+  error?: string;
+  errorCode?: string;
+  progress?: number;
+  attemptsMade?: number;
+  attemptsMax?: number;
+  durationMs?: number;
+}

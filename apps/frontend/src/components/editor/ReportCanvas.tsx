@@ -83,7 +83,7 @@ function SortableRow({
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <div className="text-xs text-slate-500 mb-1">#{index + 1} {item.type || 'item'}</div>
-          {item.origin && (
+          {'origin' in item && item.origin && (
             <div className="text-xs text-slate-400 mb-1">出所: {item.origin.notebookName} / #{item.origin.cellIndex}</div>
           )}
           {item.type === 'notebook_markdown' && (

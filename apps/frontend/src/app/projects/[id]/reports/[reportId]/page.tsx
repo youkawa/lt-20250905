@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Report, Template, ReportContentItem, CodeOutput } from '@/types/api';
+import type { Report, Template, ReportContentItem, CodeOutput, ExportJobInfo } from '@/types/api';
 import { ReportsApi, ExportApi, ExportJobsApi, TemplatesApi } from '@/lib/api';
 import { useAutoSave } from '@/lib/hooks';
 import { toDisplayMessage } from '@/lib/errors';
@@ -62,7 +62,7 @@ export default function ReportDetailPage() {
   // 解析セルの一時保持は未使用のため削除
   const [exporting, setExporting] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [jobInfo, setJobInfo] = useState<{ jobId: string; status: string; downloadUrl?: string; error?: string; errorCode?: string } | null>(null);
+  const [jobInfo, setJobInfo] = useState<ExportJobInfo | null>(null);
   const [errorInfo, setErrorInfo] = useState<{ code?: string; message?: string } | null>(null);
   const [templateId, setTemplateId] = useState<string>("");
   const [templates, setTemplates] = useState<Template[]>([]);

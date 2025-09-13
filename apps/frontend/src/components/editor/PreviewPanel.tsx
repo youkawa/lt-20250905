@@ -13,7 +13,7 @@ export function PreviewPanel({ items }: { items: ReportContentItem[] }) {
         {items.map((it, idx) => (
           <div key={idx} className="border rounded-md p-4 bg-white shadow-sm">
             <div className="text-xs text-slate-500 mb-2">スライド {idx + 1}</div>
-            {it.origin && (
+            {'origin' in it && it.origin && (
               <div className="text-xs text-slate-400 mb-2">出所: {it.origin.notebookName} / #{it.origin.cellIndex}</div>
             )}
             {it.type === 'notebook_markdown' && (
