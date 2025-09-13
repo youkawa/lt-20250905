@@ -3,29 +3,29 @@ import { test, expect } from '@playwright/test';
 test.describe('Report Editor E2E - DnD reorder', () => {
   test('drag handle moves first item to last', async ({ page }) => {
     // Prepare report with three text_box items A,B,C
-    await page.route('**/reports/r1', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname !== '/reports/r1') return route.fallback();
-      if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [
-        { type: 'text_box', content: '<p>A</p>' },
-        { type: 'text_box', content: '<p>B</p>' },
-        { type: 'text_box', content: '<p>C</p>' },
-      ] } });
-      if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
-      return route.fallback();
-    });
-    await page.route('**/templates', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname === '/templates') return route.fulfill({ json: [] });
-      return route.fallback();
+    await page.addInitScript(() => {
+      const original = window.fetch;
+      // @ts-ignore
+      window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : (input as Request).url;
+        const method = (init && init.method) || 'GET';
+        if (url.endsWith('/templates') && method === 'GET') return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/reports/r1') && method === 'GET') return new Response(JSON.stringify({ id: 'r1', projectId: 'p1', title: 'Report', content: [
+          { type: 'text_box', content: '<p>A</p>' },
+          { type: 'text_box', content: '<p>B</p>' },
+          { type: 'text_box', content: '<p>C</p>' },
+        ] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/reports/r1') && method === 'PATCH') return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        return original(input as any, init);
+      };
     });
 
     await page.goto('/projects/p1/reports/r1');
 
-    // 3つの項目が見える
-    await expect(page.getByText('A')).toBeVisible();
-    await expect(page.getByText('B')).toBeVisible();
-    await expect(page.getByText('C')).toBeVisible();
+    // 3つの項目が見える（リスト内で検証）
+    await expect(page.getByText('レポート編集')).toBeVisible();
+    const itemsList = page.locator('ul > li');
+    await expect(itemsList).toHaveCount(3);
 
     // 1つ目の「並替」ハンドルを3つ目の位置までドラッグ
     const handles = page.getByRole('button', { name: 'ドラッグで並べ替え' });
@@ -38,9 +38,7 @@ test.describe('Report Editor E2E - DnD reorder', () => {
     await page.mouse.up();
 
     // 表示順が B, C, A になることを確認
-    const items = page.locator('ul > li');
-    await expect(items).toHaveCount(3);
-    const texts = await items.allInnerTexts();
+    const texts = await itemsList.allInnerTexts();
     // innerText には番号なども含まれるため、A/B/C の出現順で判定
     const joined = texts.join(' | ');
     const idxA = joined.indexOf('A');

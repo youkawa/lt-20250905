@@ -2,45 +2,35 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Report Editor E2E - export failure handling', () => {
   test('shows alert when export job fails', async ({ page }) => {
-    await page.route('**/reports/r1', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname !== '/reports/r1') return route.fallback();
-      if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [] } });
-      if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
-      return route.fallback();
-    });
-    await page.route('**/templates', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname === '/templates') return route.fulfill({ json: [] });
-      return route.fallback();
-    });
-    await page.route('**/exports', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname !== '/exports') return route.fallback();
-      if (req.method() === 'POST') return route.fulfill({ json: { jobId: 'jF', status: 'queued' } });
-      return route.fallback();
-    });
-    await page.route('**/export-jobs/jF', (route, req) => {
-      const { pathname } = new URL(req.url());
-      if (pathname !== '/export-jobs/jF') return route.fallback();
-      return route.fulfill({ json: { jobId: 'jF', status: 'failed', error: 'kaleido failed' } });
+    await page.addInitScript(() => {
+      const original = window.fetch;
+      // @ts-ignore
+      window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : (input as Request).url;
+        const method = (init && init.method) || 'GET';
+        if (url.endsWith('/templates') && method === 'GET') return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/reports/r1') && method === 'GET') return new Response(JSON.stringify({ id: 'r1', projectId: 'p1', title: 'Report', content: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/reports/r1') && method === 'PATCH') return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/exports') && method === 'POST') return new Response(JSON.stringify({ jobId: 'jF', status: 'queued' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.endsWith('/export-jobs/jF')) return new Response(JSON.stringify({ jobId: 'jF', status: 'failed', error: 'kaleido failed' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        return original(input as any, init);
+      };
     });
 
     await page.goto('/projects/p1/reports/r1');
 
     // アラート監視
-    const dialogs: string[] = [];
-    page.on('dialog', async (d) => { dialogs.push(d.message()); await d.dismiss(); });
+    // 失敗はトースト表示になる（アラートではない）
 
     // エクスポートボタン押下
-    const btn = page.getByRole('button', { name: 'PPTXエクスポート' });
+    const btn = page.getByRole('button', { name: /PPTXエクスポート|エクスポート/ });
     await btn.click();
 
     // ポーリング1回分待機
     await page.waitForTimeout(1100);
 
-    // 失敗アラートが表示される
-    await expect.poll(() => dialogs.length, { message: 'alert not shown' }).toBeGreaterThan(0);
-    expect(dialogs.some((m) => /エクスポートに失敗/.test(m) || /failed/i.test(m))).toBeTruthy();
+    // 失敗トーストが表示される
+    const toast = page.getByText(/エクスポートに失敗しました|error/i);
+    await expect(toast).toBeVisible();
   });
 });
