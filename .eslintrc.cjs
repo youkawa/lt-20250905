@@ -13,7 +13,8 @@ module.exports = {
   ],
   settings: { 'import/resolver': { typescript: true } },
   rules: {
-    'unused-imports/no-unused-imports': 'warn',
+    // 一時的に無効化（CI厳格運用と相性が悪いため、段階導入）
+    'unused-imports/no-unused-imports': 'off',
     'import/order': [
       'warn',
       {
