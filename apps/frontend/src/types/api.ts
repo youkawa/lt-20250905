@@ -17,7 +17,7 @@ export interface Project {
   updatedAt: string;
 }
 
-export type ReportContentItem = any; // 詳細モデルは後続で詰める
+export type ReportContentItem = Record<string, unknown>; // 最小限の安全な表現（後続で詳細化）
 
 export interface Report {
   id: string;

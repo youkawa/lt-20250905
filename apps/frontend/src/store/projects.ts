@@ -19,8 +19,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     try {
       const items = await ProjectsApi.list();
       set({ projects: items });
-    } catch (e: any) {
-      set({ error: e.message || '取得に失敗しました' });
+    } catch (e: unknown) {
+      set({ error: e instanceof Error ? e.message : '取得に失敗しました' });
     } finally {
       set({ loading: false });
     }
@@ -35,4 +35,3 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     set({ projects: get().projects.filter((x) => x.id !== id) });
   },
 }));
-

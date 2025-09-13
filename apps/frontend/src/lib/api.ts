@@ -5,6 +5,7 @@ import type {
   Paginated,
   Project,
   Report,
+  ReportContentItem,
   ParsedNotebook,
   User,
 } from '../types/api';
@@ -50,7 +51,7 @@ export const ReportsApi = {
   async create(input: {
     projectId: string;
     title: string;
-    content: any[];
+    content: ReportContentItem[];
     metadata?: Record<string, unknown>;
   }): Promise<Report> {
     const url = `${apiConfig.apiBaseUrl}/reports`;
@@ -62,7 +63,7 @@ export const ReportsApi = {
   },
   async update(id: string, patch: Partial<Pick<Report, 'title' | 'content' | 'metadata'>>): Promise<Report> {
     const url = `${apiConfig.apiBaseUrl}/reports/${id}`;
-    return request<Report>(url, jsonOptions('PATCH', patch as any, buildAuthHeaders()));
+    return request<Report>(url, jsonOptions('PATCH', patch, buildAuthHeaders()));
   },
 };
 
@@ -79,7 +80,7 @@ export const NotebookApi = {
 
 // Export jobs via main API proxy
 export const ExportJobsApi = {
-  get(jobId: string): Promise<any> {
+  get(jobId: string): Promise<{ jobId: string; status: string; downloadUrl?: string; error?: string; errorCode?: string }> {
     const url = `${apiConfig.apiBaseUrl}/export-jobs/${encodeURIComponent(jobId)}`;
     return request(url, { headers: buildAuthHeaders() });
   },
@@ -88,7 +89,7 @@ export const ExportJobsApi = {
 export const ExportApi = {
   start(input: {
     title: string;
-    content: any[];
+    content: ReportContentItem[];
     metadata?: Record<string, unknown>;
     templateId?: string;
     templatePath?: string;
@@ -101,11 +102,11 @@ export const ExportApi = {
 
 // Templates (admin)
 export const TemplatesApi = {
-  list(): Promise<any[]> {
+  list(): Promise<Array<{ id: string; title: string; version: number; content?: unknown }>> {
     const url = `${apiConfig.apiBaseUrl}/templates`;
     return request(url, { headers: buildAuthHeaders() });
   },
-  async upload(file: File, title: string, version: number): Promise<any> {
+  async upload(file: File, title: string, version: number): Promise<{ id: string }> {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('title', title);
@@ -120,7 +121,7 @@ export const TemplatesApi = {
   setDefault(id: string, body?: { projectId?: string; titlePattern?: string }): Promise<{ ok: boolean }> {
     const url = `${apiConfig.apiBaseUrl}/templates/${encodeURIComponent(id)}/default`;
     if (body && (body.projectId || body.titlePattern)) {
-      return request(url, jsonOptions('POST', body as any, buildAuthHeaders()));
+      return request(url, jsonOptions('POST', body, buildAuthHeaders()));
     }
     return request(url, { method: 'POST', headers: buildAuthHeaders() });
   },

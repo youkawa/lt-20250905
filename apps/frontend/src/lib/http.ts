@@ -4,8 +4,8 @@ type JsonBody = Record<string, unknown> | unknown[];
 
 export class ApiError extends Error {
   status: number;
-  payload?: any;
-  constructor(message: string, status: number, payload?: any) {
+  payload?: unknown;
+  constructor(message: string, status: number, payload?: unknown) {
     super(message);
     this.status = status;
     this.payload = payload;
@@ -33,7 +33,7 @@ async function doFetch(url: string, options: RequestInit): Promise<Response> {
 export async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   const attempt = async (): Promise<Response> => doFetch(url, options);
 
-  let lastErr: any;
+  let lastErr: unknown;
   const maxAttempts = Math.max(1, apiConfig.retry + 1);
   for (let i = 0; i < maxAttempts; i++) {
     try {
@@ -58,9 +58,11 @@ export async function request<T>(url: string, options: RequestInit = {}): Promis
 async function handleResponse<T>(res: Response): Promise<T> {
   const ct = res.headers.get('content-type') || '';
   const isJson = ct.includes('application/json');
-  const data = isJson ? await res.json().catch(() => undefined) : await res.text();
+  const data: unknown = isJson ? await res.json().catch(() => undefined) : await res.text();
   if (!res.ok) {
-    const message = (isJson && data?.detail) || res.statusText || 'Request failed';
+    const message = (isJson && typeof data === 'object' && data && 'detail' in data
+      ? String((data as { detail?: unknown }).detail)
+      : res.statusText) || 'Request failed';
     throw new ApiError(message, res.status, data);
   }
   return data as T;

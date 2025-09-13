@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
+export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delayMs: number,
 ) {
@@ -27,8 +27,8 @@ export function useAutoSave<T>(initial: T, onSave: (value: T) => Promise<void>) 
     try {
       await onSave(val);
       setSavedAt(new Date());
-    } catch (e: any) {
-      setError(e.message || '保存に失敗しました');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '保存に失敗しました');
     } finally {
       setSaving(false);
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, type ComponentType } from 'react';
 import { PlotlyOutput } from './PlotlyOutput';
 
 type CodeOutput = {
@@ -10,15 +10,17 @@ type CodeOutput = {
   metadata?: Record<string, unknown>;
 };
 
+type JupyterModule = { Output?: ComponentType<{ output: CodeOutput }> } | null;
+
 export function JupyterOutput({ output }: { output: CodeOutput }) {
-  const [Jupyter, setJupyter] = useState<any>(null);
+  const [Jupyter, setJupyter] = useState<JupyterModule>(null);
   const [canRender, setCanRender] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const mod: any = await import('@datalayer/jupyter-ui');
+        const mod = (await import('@datalayer/jupyter-ui')) as JupyterModule;
         if (!mounted) return;
         setJupyter(mod);
         // Heuristic: if module exports Output component, try to use it
@@ -38,11 +40,11 @@ export function JupyterOutput({ output }: { output: CodeOutput }) {
   const content = useMemo(() => {
     if (canRender && Jupyter?.Output) {
       try {
-        const O = Jupyter.Output as any;
+        const O = Jupyter.Output as ComponentType<{ output: CodeOutput }>;
         // Many Jupyter UI wrappers accept a classic nbformat-like output object
         return (
           <Suspense fallback={<div className="text-xs text-slate-500">loading…</div>}>
-            <O output={output as any} />
+            <O output={output} />
           </Suspense>
         );
       } catch (_) {
@@ -67,4 +69,3 @@ export function JupyterOutput({ output }: { output: CodeOutput }) {
 
   return <div>{content}</div>;
 }
-
