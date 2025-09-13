@@ -11,10 +11,12 @@ export type ReportMetadata = Record<string, unknown>;
 export class CreateReportDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ example: 'p1' })
   projectId!: string;
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ example: 'Q1 Sales' })
   title!: string;
 
   // content は Json として受ける
@@ -24,12 +26,14 @@ export class CreateReportDto {
   content!: ReportContentItem[];
 
   @IsOptional()
+  @ApiProperty({ required: false, example: { source: 'seed' } })
   metadata?: ReportMetadata;
 }
 
 export class UpdateReportDto {
   @IsOptional()
   @IsString()
+  @ApiProperty({ required: false, example: 'Q1 Sales (Updated)' })
   title?: string;
   @IsOptional()
   @IsArray()
@@ -38,6 +42,7 @@ export class UpdateReportDto {
   content?: ReportContentItem[];
 
   @IsOptional()
+  @ApiProperty({ required: false, example: { lastEditedBy: 'u1' } })
   metadata?: ReportMetadata;
 }
 

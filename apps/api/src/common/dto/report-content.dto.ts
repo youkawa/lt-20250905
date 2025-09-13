@@ -4,13 +4,13 @@ export class CodeOutputDto {
   @ApiProperty()
   output_type!: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: "stdout" })
   text?: string;
 
-  @ApiProperty({ required: false, type: 'object', additionalProperties: true })
+  @ApiProperty({ required: false, type: 'object', additionalProperties: true, example: { 'image/png': '<BASE64>' } })
   data?: Record<string, unknown>;
 
-  @ApiProperty({ required: false, type: 'object', additionalProperties: true })
+  @ApiProperty({ required: false, type: 'object', additionalProperties: true, example: { isolated: true } })
   metadata?: Record<string, unknown>;
 }
 
@@ -18,7 +18,7 @@ export class NotebookMarkdownItemDto {
   @ApiProperty({ enum: ['notebook_markdown'] })
   type!: 'notebook_markdown';
 
-  @ApiProperty()
+  @ApiProperty({ example: "# Title\nSome markdown..." })
   source!: string;
 
   @ApiProperty({ required: false, type: 'object', properties: {
@@ -32,10 +32,10 @@ export class NotebookCodeItemDto {
   @ApiProperty({ enum: ['notebook_code'] })
   type!: 'notebook_code';
 
-  @ApiProperty()
+  @ApiProperty({ example: "print('hello')" })
   source!: string;
 
-  @ApiProperty({ type: 'array', items: { $ref: getSchemaPath(CodeOutputDto) } })
+  @ApiProperty({ type: 'array', items: { $ref: getSchemaPath(CodeOutputDto) }, example: [ { output_type: 'stream', text: 'hello' } ] })
   outputs!: CodeOutputDto[];
 
   @ApiProperty({ required: false, type: 'object', properties: {
@@ -49,7 +49,7 @@ export class TextBoxItemDto {
   @ApiProperty({ enum: ['text_box'] })
   type!: 'text_box';
 
-  @ApiProperty()
+  @ApiProperty({ example: "<p>任意のHTMLテキスト</p>" })
   content!: string;
 }
 
@@ -63,4 +63,3 @@ export class ReportContentItemDto {
   ]})
   _!: unknown;
 }
-
