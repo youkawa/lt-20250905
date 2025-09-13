@@ -23,7 +23,7 @@ export function isReportContentItem(v: any): boolean {
 }
 
 export function IsReportContentItem(options?: ValidationOptions) {
-  return function (object: unknown, propertyName: string) {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'IsReportContentItem',
       target: object.constructor,
