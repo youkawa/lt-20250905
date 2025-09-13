@@ -3,7 +3,7 @@ import { ExportWorkerService } from './export-worker.service';
 
 @Injectable()
 export class ExportWorkerRunner implements OnModuleInit, OnModuleDestroy {
-  private timer: any = null;
+  private timer: ReturnType<typeof setInterval> | null = null;
   constructor(private readonly worker: ExportWorkerService) {}
 
   onModuleInit() {
@@ -22,4 +22,3 @@ export class ExportWorkerRunner implements OnModuleInit, OnModuleDestroy {
     }
   }
 }
-

@@ -159,6 +159,22 @@ cd ../..
 
 ---
 
+## 🚦 CI（GitHub Actions）
+
+- ワークフロー: `.github/workflows/ci.yml`
+- ジョブ構成:
+  - Lint (ESLint): `apps/frontend/src` に加え、API `apps/api/src` も対象（stage 2）。現状は警告（import/order）は許容し、エラーはゼロを維持。
+  - Frontend Unit: Next.js 本番ビルド（型チェック有効）→ Vitest 実行。
+  - Frontend E2E: Playwright ブラウザをセットアップし、E2E を実行。レポートをアーティファクトに保存。
+  - API (Jest): API を `npm run build` で型チェック後、Jest 実行。
+  - Notebook (pytest): FastAPI サービスのpytestを実行。
+
+補足方針:
+- E2Eは「ページ内 fetch スタブ」を使用し、Next.js の静的アセット/SSRを妨げない形でAPI応答をモックします。
+- Lintは厳格運用（警告ゼロ）。`npm run lint:fix` での自動整形を推奨します。
+
+---
+
 ## ❓ FAQ
 
 - **管理者APIが403エラーになる**

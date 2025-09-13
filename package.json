@@ -6,6 +6,8 @@
     "apps/api"
   ],
   "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint-config-prettier": "^9.1.0",
@@ -14,6 +16,9 @@
   },
   "scripts": {
     "lint": "eslint \"apps/**/*.{ts,tsx,js}\"",
+    "lint:fix": "eslint \"apps/**/*.{ts,tsx,js}\" --fix",
+    "lint:frontend": "eslint \"apps/frontend/src/**/*.{ts,tsx,js}\"",
+    "lint:api": "eslint \"apps/api/src/**/*.ts\"",
     "format": "echo 'Run per workspace'",
     "test": "echo 'Run per workspace'"
   },

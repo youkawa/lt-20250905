@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+
+import { AdminGuard } from '../../common/auth/admin.guard';
+import { PrismaService } from '../../prisma/prisma.service';
 import { TemplatesController } from './templates.controller';
 import { TemplatesService } from './templates.service';
-import { PrismaService } from '../../prisma/prisma.service';
-import { AdminGuard } from '../../common/auth/admin.guard';
 
 @Module({
   controllers: [TemplatesController],
@@ -10,4 +11,3 @@ import { AdminGuard } from '../../common/auth/admin.guard';
   exports: [TemplatesService],
 })
 export class TemplatesModule {}
-

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ExportQueueService } from './export-queue.service';
-import { ExportsService } from '../exports/exports.service';
+
 import { MetricsService } from '../../metrics/metrics.service';
+import { ExportsService } from '../exports/exports.service';
+import { ExportQueueService } from './export-queue.service';
 
 @Injectable()
 export class ExportWorkerService {

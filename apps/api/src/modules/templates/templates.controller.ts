@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
-import { TemplatesService } from './templates.service';
-import { CreateTemplateDto, UpdateTemplateDto, UploadTemplateDto, SetDefaultDto } from './dto';
-import { AdminGuard } from '../../common/auth/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+
+import { AdminGuard } from '../../common/auth/admin.guard';
+import { CreateTemplateDto, UpdateTemplateDto, UploadTemplateDto, SetDefaultDto } from './dto';
+import { TemplatesService } from './templates.service';
 
 @Controller('templates')
 export class TemplatesController {

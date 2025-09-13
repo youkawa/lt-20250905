@@ -56,5 +56,10 @@ yarn-error.log*
 **/playwright-report/
 **/test-results/
 
+# Lint/Build caches
+.eslintcache
+.cache/
+.vercel/
+
 # Serena project metadata
 .serena/

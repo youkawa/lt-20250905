@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+
 import { ProxyService } from './proxy.service';
 
 @Controller()
@@ -10,4 +11,3 @@ export class ProxyController {
     return this.proxy.getExportJob(jobId);
   }
 }
-

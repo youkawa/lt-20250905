@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ExportsService } from '../exports/exports.service';
+
 import { MetricsService } from '../../metrics/metrics.service';
+import { ExportsService } from '../exports/exports.service';
 
 function getBull(): { Worker: any } {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
