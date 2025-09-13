@@ -19,7 +19,7 @@ export class UsersController {
 
   @Get('me')
   me(@CurrentUser() user?: { id: string }) {
-    if (!user) return null as any;
+    if (!user) return null;
     return this.users.findOne(user.id);
   }
 

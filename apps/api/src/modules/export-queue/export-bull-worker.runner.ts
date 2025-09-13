@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ExportsService } from '../exports/exports.service';
 import { MetricsService } from '../../metrics/metrics.service';
@@ -33,24 +34,24 @@ export class ExportBullWorkerRunner implements OnModuleInit, OnModuleDestroy {
       const payload = { level: 'info', event: 'export.completed', jobId: String(job?.id), downloadUrl: ret?.downloadUrl, processedOn: job?.processedOn, finishedOn: job?.finishedOn, durationMs: job?.processedOn && job?.finishedOn ? Math.max(0, job.finishedOn - job.processedOn) : undefined };
       // eslint-disable-next-line no-console
       console.log(JSON.stringify(payload));
-      try { this.metrics.jobsCompleted.inc(); } catch (_) {}
+      try { this.metrics.jobsCompleted.inc(); } catch { void 0; }
       const dur = payload.durationMs;
       if (typeof dur === 'number') {
-        try { this.metrics.jobDuration.observe(dur); } catch (_) {}
+        try { this.metrics.jobDuration.observe(dur); } catch { void 0; }
       }
     });
     this.worker.on('failed', (job: any, err: any) => {
       const payload = { level: 'error', event: 'export.failed', jobId: String(job?.id), error: err?.message || String(err), attemptsMade: job?.attemptsMade };
       // eslint-disable-next-line no-console
       console.error(JSON.stringify(payload));
-      try { this.metrics.jobsFailed.inc(); } catch (_) {}
+      try { this.metrics.jobsFailed.inc(); } catch { void 0; }
       const code = (err && (err.code || err.name)) || 'WORKER_FAILED';
-      try { this.metrics.jobsFailedByCode.labels(String(code)).inc(); } catch (_) {}
+      try { this.metrics.jobsFailedByCode.labels(String(code)).inc(); } catch { void 0; }
       const processedOn = job?.processedOn;
       const finishedOn = job?.finishedOn;
       const dur = processedOn && finishedOn ? Math.max(0, finishedOn - processedOn) : undefined;
       if (typeof dur === 'number') {
-        try { this.metrics.jobDuration.observe(dur); } catch (_) {}
+        try { this.metrics.jobDuration.observe(dur); } catch { void 0; }
       }
     });
   }

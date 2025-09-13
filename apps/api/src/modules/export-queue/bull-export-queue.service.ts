@@ -17,7 +17,7 @@ type BullJob = {
   failedReason?: string;
 };
 
-function getBull(): { Queue: BullQueue; Worker: any; QueueEvents: any } {
+function getBull(): { Queue: BullQueue; Worker: unknown; QueueEvents: unknown } {
   // dynamic require to avoid build-time dependency in non-bull environments
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod = require('bullmq');

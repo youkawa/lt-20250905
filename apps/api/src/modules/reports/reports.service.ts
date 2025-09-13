@@ -35,8 +35,16 @@ export class ReportsService {
     if (!rep) throw new NotFoundException('Report not found');
     if (rep.project.ownerId !== ownerId) throw new ForbiddenException('Forbidden');
     // omit project before returning
-    const { project, ...rest } = rep as any;
-    return rest;
+    return {
+      id: rep.id,
+      projectId: rep.projectId,
+      title: rep.title,
+      version: rep.version,
+      content: rep.content,
+      metadata: rep.metadata,
+      createdAt: rep.createdAt,
+      updatedAt: rep.updatedAt,
+    };
   }
 
   async updateOwned(ownerId: string, id: string, dto: UpdateReportDto) {

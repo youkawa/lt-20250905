@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTemplateDto, UpdateTemplateDto, SetDefaultDto } from './dto';
+import { CreateTemplateDto, UpdateTemplateDto, SetDefaultDto, TemplateContent, TemplateRule } from './dto';
 
 @Injectable()
 export class TemplatesService {
@@ -47,8 +47,8 @@ export class TemplatesService {
       return { ok: true };
     }
     // スコープ付き既定: content.rules にルールを追加
-    const content = (target.content as Record<string, unknown>) || {};
-    const rules = Array.isArray((content as any).rules) ? (content as any).rules as any[] : [];
+    const content = (target.content as TemplateContent) || {};
+    const rules: TemplateRule[] = Array.isArray(content.rules) ? content.rules : [];
     rules.push({ projectId: rule?.projectId, titlePattern: rule?.titlePattern, isDefault: true, createdAt: new Date().toISOString() });
     content.rules = rules;
     await this.prisma.template.update({ where: { id }, data: { content } });

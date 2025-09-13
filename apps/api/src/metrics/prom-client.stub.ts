@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Minimal stub for prom-client used only in tests
 export class Registry {
   // eslint-disable-next-line @typescript-eslint/no-empty-function

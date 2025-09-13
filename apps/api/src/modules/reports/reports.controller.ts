@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { CreateReportDto, PaginationQuery, UpdateReportDto } from './dto';
+import { CreateReportDto, UpdateReportDto } from './dto';
 import { CurrentUser } from '../../common/auth/user.decorator';
 
 @Controller('reports')
