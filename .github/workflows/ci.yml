@@ -27,7 +27,7 @@ jobs:
       - name: Lint frontend only (stage 1)
         run: npx eslint "apps/frontend/src/**/*.{ts,tsx,js}" --max-warnings=0
       - name: Lint API (stage 2)
-        run: npx eslint "apps/api/src/**/*.ts" --max-warnings=0
+        run: npx eslint "apps/api/src/**/*.ts" --fix --max-warnings=0
 
   frontend-unit:
     name: Frontend Unit

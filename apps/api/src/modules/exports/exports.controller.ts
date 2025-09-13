@@ -14,7 +14,9 @@ export class ExportsController {
   start(@CurrentUser() user: { id: string } | undefined, @Body() dto: StartExportDto) {
     if (process.env.EXPORT_ASYNC === 'true') {
       const rec = this.queue.enqueueExport({ ...dto, userId: user?.id });
-      try { this.metrics.jobsEnqueued.inc(); } catch (_) {}
+      try { this.metrics.jobsEnqueued.inc(); } catch {
+        void 0;
+      }
       return rec;
     }
     return this.exportsService.startExport(dto, user?.id);
