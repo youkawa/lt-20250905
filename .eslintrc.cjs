@@ -33,6 +33,8 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
+        // CI厳格化に伴い、テストでは順序警告を無効化（段階導入のため）
+        'import/order': 'off',
       },
     },
     // Next.js App Router の page など、段階的に型付けを進める対象
@@ -40,6 +42,13 @@ module.exports = {
       files: ['apps/frontend/src/app/**/*.tsx'],
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+    // フロントエンド本体は段階導入のため import/order を一時的に無効化
+    {
+      files: ['apps/frontend/src/**/*.{ts,tsx,js}'],
+      rules: {
+        'import/order': 'off',
       },
     },
   ],
