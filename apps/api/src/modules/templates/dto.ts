@@ -1,6 +1,7 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+
 import { IsRegexPattern } from '../../common/validators/regex.validator';
 
 export type TemplateRule = { projectId?: string; titlePattern?: string; isDefault?: boolean; createdAt?: string };
