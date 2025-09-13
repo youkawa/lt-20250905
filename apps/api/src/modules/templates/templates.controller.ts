@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import type { Express } from 'express';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -8,11 +9,13 @@ import { CreateTemplateDto, UpdateTemplateDto, UploadTemplateDto, SetDefaultDto 
 import { TemplatesService } from './templates.service';
 import { AdminGuard } from '../../common/auth/admin.guard';
 
+@ApiTags('templates')
 @Controller('templates')
 export class TemplatesController {
   constructor(private readonly templates: TemplatesService) {}
 
   @Get()
+  @ApiOkResponse({ description: 'List templates' })
   list() {
     return this.templates.list();
   }
@@ -43,6 +46,8 @@ export class TemplatesController {
   @UseGuards(AdminGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' }, title: { type: 'string' }, version: { type: 'integer' } }, required: ['file','title','version'] } })
   async upload(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadTemplateDto,

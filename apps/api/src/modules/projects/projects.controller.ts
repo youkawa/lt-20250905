@@ -1,20 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Post, NotFoundException, ForbiddenException, Query } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { CreateProjectDto } from './dto';
 import { ProjectsService } from './projects.service';
 import { CurrentUser } from '../../common/auth/user.decorator';
 import { ReportsService } from '../reports/reports.service';
 
+@ApiTags('projects')
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projects: ProjectsService, private readonly reports: ReportsService) {}
 
   @Get()
+  @ApiOkResponse({ description: 'List projects' })
   list(@CurrentUser() user: { id: string }) {
     return this.projects.findAllByOwner(user.id);
   }
 
   @Post()
+  @ApiBody({ description: 'Create project' })
   create(@CurrentUser() user: { id: string }, @Body() dto: CreateProjectDto) {
     return this.projects.create(user.id, dto);
   }
@@ -36,6 +40,8 @@ export class ProjectsController {
   }
 
   @Get(':id/reports')
+  @ApiQuery({ name: 'take', required: false, type: Number })
+  @ApiQuery({ name: 'cursor', required: false, type: String })
   listReports(
     @CurrentUser() user: { id: string },
     @Param('id') id: string,

@@ -25,8 +25,8 @@ export class ReportsService {
         projectId: dto.projectId,
         title: dto.title,
         version: nextVersion,
-        content: dto.content ?? {},
-        metadata: dto.metadata ?? undefined,
+        content: (dto.content as unknown) as any,
+        metadata: (dto.metadata as unknown) as any,
       },
     });
   }
@@ -50,7 +50,11 @@ export class ReportsService {
 
   async updateOwned(ownerId: string, id: string, dto: UpdateReportDto) {
     await this.findOneOwned(ownerId, id);
-    return this.prisma.report.update({ where: { id }, data: dto });
+    const data: any = {};
+    if (dto.title !== undefined) data.title = dto.title;
+    if (dto.content !== undefined) data.content = (dto.content as unknown) as any;
+    if (dto.metadata !== undefined) data.metadata = (dto.metadata as unknown) as any;
+    return this.prisma.report.update({ where: { id }, data });
   }
 
   async listByProjectOwned(ownerId: string, projectId: string, take = 20, cursor?: string) {

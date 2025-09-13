@@ -8,7 +8,7 @@ export class TemplatesService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(dto: CreateTemplateDto) {
-    return this.prisma.template.create({ data: { title: dto.title, version: dto.version, content: dto.content } });
+    return this.prisma.template.create({ data: { title: dto.title, version: dto.version, content: (dto.content as unknown) as any } });
   }
 
   list() {
@@ -23,7 +23,11 @@ export class TemplatesService {
 
   async update(id: string, dto: UpdateTemplateDto) {
     await this.get(id);
-    return this.prisma.template.update({ where: { id }, data: dto });
+    const data: any = {};
+    if (dto.title !== undefined) data.title = dto.title;
+    if (dto.version !== undefined) data.version = dto.version;
+    if (dto.content !== undefined) data.content = (dto.content as unknown) as any;
+    return this.prisma.template.update({ where: { id }, data });
   }
 
   async remove(id: string) {
@@ -43,7 +47,7 @@ export class TemplatesService {
         const content = (t.content as Record<string, unknown>) || {};
         const next = { ...content } as Record<string, unknown>;
         next.isDefault = t.id === id;
-        await this.prisma.template.update({ where: { id: t.id }, data: { content: next } });
+        await this.prisma.template.update({ where: { id: t.id }, data: { content: (next as unknown) as any } });
       }
       return { ok: true };
     }
@@ -52,7 +56,7 @@ export class TemplatesService {
     const rules: TemplateRule[] = Array.isArray(content.rules) ? content.rules : [];
     rules.push({ projectId: rule?.projectId, titlePattern: rule?.titlePattern, isDefault: true, createdAt: new Date().toISOString() });
     content.rules = rules;
-    await this.prisma.template.update({ where: { id }, data: { content } });
+    await this.prisma.template.update({ where: { id }, data: { content: (content as unknown) as any } });
     return { ok: true };
   }
 }
