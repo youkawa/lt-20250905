@@ -117,4 +117,4 @@ jobs:
           pip install -r requirements.txt
       - name: Run pytest
         working-directory: apps/notebook-service
-        run: pytest -q
+        run: PYTHONPATH=. pytest -q
