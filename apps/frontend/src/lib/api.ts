@@ -104,7 +104,7 @@ export const ExportApi = {
 export const TemplatesApi = {
   list(): Promise<Array<{ id: string; title: string; version: number; content: any; createdAt: string }>> {
     const url = `${apiConfig.apiBaseUrl}/templates`;
-    return request(url, { headers: buildAuthHeaders() });
+    return request<Array<{ id: string; title: string; version: number; content: any; createdAt: string }>>(url, { headers: buildAuthHeaders() });
   },
   async upload(file: File, title: string, version: number): Promise<{ id: string }> {
     const fd = new FormData();
