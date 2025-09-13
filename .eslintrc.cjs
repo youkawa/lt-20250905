@@ -24,5 +24,26 @@ module.exports = {
     ],
   },
   ignorePatterns: ['dist', 'node_modules', '.next', 'coverage'],
+  overrides: [
+    // Test/E2E/Mocks は any と未使用変数を緩和
+    {
+      files: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'apps/frontend/e2e/**/*.ts',
+        'apps/frontend/src/test/**/*.ts',
+      ],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
+    // Next.js App Router の page など、段階的に型付けを進める対象
+    {
+      files: ['apps/frontend/src/app/**/*.tsx'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 };
-
