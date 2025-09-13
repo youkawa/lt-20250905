@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
-  fn: T,
+export function useDebouncedCallback<Args extends unknown[]>(
+  fn: (...args: Args) => unknown,
   delayMs: number,
 ) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -9,7 +9,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   useEffect(() => {
     saved.current = fn;
   }, [fn]);
-  return useCallback((...args: Parameters<T>) => {
+  return useCallback((...args: Args) => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => saved.current(...args), delayMs);
   }, [delayMs]);
