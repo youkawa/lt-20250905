@@ -34,7 +34,7 @@ module.exports = {
   },
   ignorePatterns: ['dist', 'node_modules', '.next', 'coverage'],
   overrides: [
-    // Test/E2E/Mocks は any と未使用変数を緩和
+    // Test/E2E/Mocks は any と未使用変数を緩和（順序の都合で重ねて末尾にも定義）
     {
       files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', 'apps/frontend/e2e/**/*.ts', 'apps/frontend/src/test/**/*.ts', 'apps/api/src/e2e/**/*.ts'],
       rules: {
@@ -42,15 +42,7 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
-        // CI厳格化に伴い、テストでは順序警告を無効化（段階導入のため）
         'import/order': 'off',
-      },
-    },
-    // Next.js App Router の page など、段階的に型付けを進める対象
-    {
-      files: ['apps/frontend/src/app/**/*.tsx'],
-      rules: {
-        '@typescript-eslint/no-explicit-any': 'off',
       },
     },
     // フロントエンド本体は段階導入のため import/order を一時的に無効化
@@ -58,12 +50,21 @@ module.exports = {
       files: ['apps/frontend/src/**/*.{ts,tsx,js}'],
       rules: {
         'import/order': 'off',
-        '@typescript-eslint/no-explicit-any': 'off',
+        // any は原則禁止（テスト/モックは別オーバーライドで緩和）
+        '@typescript-eslint/no-explicit-any': 'error',
         // 段階導入: まず未使用変数をエラー化
         '@typescript-eslint/no-unused-vars': [
           'error',
           { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
         ],
+      },
+    },
+    // テスト/モックを最終的に再緩和（このブロックが最後に適用される）
+    {
+      files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', 'apps/frontend/src/**/__mocks__/**'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
       },
     },
   ],

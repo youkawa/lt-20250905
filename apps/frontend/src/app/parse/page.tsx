@@ -25,8 +25,8 @@ export default function ParsePage() {
     try {
       const data = await NotebookApi.parseNotebook(file);
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'エラーが発生しました');
+    } catch (err) {
+      setError((err as Error)?.message || 'エラーが発生しました');
     } finally {
       setLoading(false);
     }
