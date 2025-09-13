@@ -1,4 +1,5 @@
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateTemplateDto {
   @IsString()
@@ -6,6 +7,7 @@ export class CreateTemplateDto {
   title!: string;
 
   @IsInt()
+  @Type(() => Number)
   version!: number;
 
   // Json content (template metadata or structure reference)
@@ -19,6 +21,7 @@ export class UpdateTemplateDto {
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   version?: number;
 
   @IsOptional()
@@ -31,6 +34,7 @@ export class UploadTemplateDto {
   title!: string;
 
   @IsInt()
+  @Type(() => Number)
   version!: number;
 }
 

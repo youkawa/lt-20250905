@@ -4,11 +4,17 @@ test.describe('Report Editor E2E - text add/sanitize/delete', () => {
   test('adds text, sanitizes HTML, deletes item', async ({ page }) => {
     // Mock report load/update
     await page.route('**/reports/r1', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/reports/r1') return route.fallback();
       if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [] } });
       if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
       return route.fallback();
     });
-    await page.route('**/templates', (route) => route.fulfill({ json: [] }));
+    await page.route('**/templates', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname === '/templates') return route.fulfill({ json: [] });
+      return route.fallback();
+    });
 
     await page.goto('/projects/p1/reports/r1');
 
@@ -30,4 +36,3 @@ test.describe('Report Editor E2E - text add/sanitize/delete', () => {
     await expect(page.getByText('Safe')).toHaveCount(0);
   });
 });
-

@@ -4,6 +4,8 @@ test.describe('Report Editor E2E - DnD reorder', () => {
   test('drag handle moves first item to last', async ({ page }) => {
     // Prepare report with three text_box items A,B,C
     await page.route('**/reports/r1', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/reports/r1') return route.fallback();
       if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [
         { type: 'text_box', content: '<p>A</p>' },
         { type: 'text_box', content: '<p>B</p>' },
@@ -12,7 +14,11 @@ test.describe('Report Editor E2E - DnD reorder', () => {
       if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
       return route.fallback();
     });
-    await page.route('**/templates', (route) => route.fulfill({ json: [] }));
+    await page.route('**/templates', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname === '/templates') return route.fulfill({ json: [] });
+      return route.fallback();
+    });
 
     await page.goto('/projects/p1/reports/r1');
 
@@ -45,4 +51,3 @@ test.describe('Report Editor E2E - DnD reorder', () => {
     expect(idxA).toBeGreaterThan(idxC);
   });
 });
-

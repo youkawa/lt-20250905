@@ -16,7 +16,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 }
 
 export function useAutoSave<T>(initial: T, onSave: (value: T) => Promise<void>) {
-  const [value, setValue] = useState<T>(initial);
+  const [value, _setValue] = useState<T>(initial);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,9 +34,19 @@ export function useAutoSave<T>(initial: T, onSave: (value: T) => Promise<void>) 
     }
   }, 600);
 
+  const setValue = useCallback(
+    (next: T) => {
+      _setValue(() => {
+        debounced(next);
+        return next;
+      });
+    },
+    [debounced],
+  );
+
   const update = useCallback(
     (updater: (prev: T) => T) => {
-      setValue((prev) => {
+      _setValue((prev) => {
         const next = updater(prev);
         debounced(next);
         return next;
@@ -47,4 +57,3 @@ export function useAutoSave<T>(initial: T, onSave: (value: T) => Promise<void>) 
 
   return { value, setValue, update, saving, savedAt, error } as const;
 }
-

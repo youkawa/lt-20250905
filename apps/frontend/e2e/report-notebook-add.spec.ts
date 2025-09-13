@@ -14,14 +14,22 @@ test.describe('Report Editor E2E - notebook cell add', () => {
   test('uploads .ipynb, shows cells, adds to canvas', async ({ page }) => {
     // Mock API endpoints used by page except notebook parse (we will intercept the upload and fulfill directly)
     await page.route('**/reports/r1', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/reports/r1') return route.fallback();
       if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [] } });
       if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
       return route.fallback();
     });
-    await page.route('**/templates', (route) => route.fulfill({ json: [] }));
+    await page.route('**/templates', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname === '/templates') return route.fulfill({ json: [] });
+      return route.fallback();
+    });
 
     // Intercept Notebook parse endpoint (multipart)
-    await page.route('**/parse', async (route) => {
+    await page.route('**/parse', async (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/parse') return route.fallback();
       // Return parsed notebook JSON expected by UI
       return route.fulfill({ json: {
         name: 'sample.ipynb',
@@ -46,4 +54,3 @@ test.describe('Report Editor E2E - notebook cell add', () => {
     await expect(page.getByText('Heading')).toBeVisible();
   });
 });
-

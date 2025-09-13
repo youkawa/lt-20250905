@@ -8,10 +8,13 @@ test.describe('Admin - template upload and set default', () => {
 
     // Mock API for admin templates
     await page.route('**/templates', async (route, req) => {
-      if (req.method() === 'GET') return route.fulfill({ json: db.templates });
+      const { pathname } = new URL(req.url());
+      if (pathname === '/templates' && req.method() === 'GET') return route.fulfill({ json: db.templates });
       return route.fallback();
     });
     await page.route('**/templates/upload', async (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/templates/upload') return route.fallback();
       if (req.method() !== 'POST') return route.fallback();
       // Push a created template
       const id = `t${db.templates.length + 1}`;
@@ -25,6 +28,8 @@ test.describe('Admin - template upload and set default', () => {
       return route.fulfill({ json: db.templates[db.templates.length - 1] });
     });
     await page.route('**/templates/*/default', async (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (!/^\/templates\/.+\/default$/.test(pathname)) return route.fallback();
       if (req.method() !== 'POST') return route.fallback();
       const m = /\/templates\/(.+)\/default/.exec(req.url());
       const id = m?.[1];
@@ -32,6 +37,8 @@ test.describe('Admin - template upload and set default', () => {
       return route.fulfill({ json: { ok: true } });
     });
     await page.route('**/templates/*', async (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (!/^\/templates\/.+$/.test(pathname)) return route.fallback();
       if (req.method() === 'DELETE') {
         const m = /\/templates\/(.+)$/.exec(req.url());
         const id = m?.[1];
@@ -60,4 +67,3 @@ test.describe('Admin - template upload and set default', () => {
     await expect(page.getByText('✓')).toBeVisible();
   });
 });
-

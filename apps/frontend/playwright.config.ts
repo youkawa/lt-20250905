@@ -9,7 +9,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'sh -c "npm run start"',
     port: 3000,
     reuseExistingServer: !process.env.CI,
     env: {
@@ -19,4 +19,3 @@ export default defineConfig({
     },
   },
 });
-

@@ -42,7 +42,7 @@ async def export(req: ExportRequest) -> ExportJob:
         j = exporter.get_job(job.jobId)
         if j:
             j.status = "failed"
-            j.error = str(e)
+            j.error = f"failed: {e}"
         return j  # type: ignore
     return exporter.get_job(job.jobId)  # type: ignore
 

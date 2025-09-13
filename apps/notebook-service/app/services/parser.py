@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict, Any
+import json
 import base64
 import uuid
 import nbformat
@@ -45,15 +46,26 @@ def _to_nb_outputs(cell: NotebookNode) -> List[NBOutput]:
 
 
 def parse_ipynb_bytes(content: bytes, notebook_name: str) -> List[ParsedCell]:
-    nb = nbformat.reads(content.decode("utf-8"), as_version=4)
+    # nbformatの厳密なバリデーションに失敗する素朴なノートブック（テスト生成など）にも対応するため、
+    # 失敗時は素直なJSONパースにフォールバックする。
+    try:
+        nb = nbformat.reads(content.decode("utf-8"), as_version=4)
+    except Exception:
+        data = json.loads(content.decode("utf-8"))
+        class _NB:  # 最低限の属性だけを持つ擬似オブジェクト
+            def __init__(self, d: dict):
+                self.cells = d.get("cells", [])
+        nb = _NB(data)
     cells: List[ParsedCell] = []
     for idx, cell in enumerate(nb.cells):
-        if cell.cell_type not in ("markdown", "code"):
+        # nbformat.NotebookNode / dict の両対応
+        cell_type = getattr(cell, "cell_type", None) if not isinstance(cell, dict) else cell.get("cell_type")
+        if cell_type not in ("markdown", "code"):
             continue
-        source = cell.get("source", "")
-        outputs = _to_nb_outputs(cell) if cell.cell_type == "code" else []
+        source = (cell.get("source", "") if isinstance(cell, dict) else getattr(cell, "source", ""))
+        outputs = _to_nb_outputs(cell) if cell_type == "code" else []
         origin = {"notebookName": notebook_name, "cellIndex": idx}
         cells.append(
-            ParsedCell(id=uuid.uuid4().hex, index=idx, cell_type=cell.cell_type, source=source, outputs=outputs, origin=origin)
+            ParsedCell(id=uuid.uuid4().hex, index=idx, cell_type=cell_type, source=source, outputs=outputs, origin=origin)
         )
     return cells

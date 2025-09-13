@@ -3,17 +3,27 @@ import { test, expect } from '@playwright/test';
 test.describe('Report Editor E2E - PDF export', () => {
   test('switches format to PDF and shows pdf link', async ({ page }) => {
     await page.route('**/reports/r1', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/reports/r1') return route.fallback();
       if (req.method() === 'GET') return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [] } });
       if (req.method() === 'PATCH') return route.fulfill({ json: { ok: true } });
       return route.fallback();
     });
-    await page.route('**/templates', (route) => route.fulfill({ json: [] }));
+    await page.route('**/templates', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname === '/templates') return route.fulfill({ json: [] });
+      return route.fallback();
+    });
     await page.route('**/exports', (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/exports') return route.fallback();
       if (req.method() === 'POST') return route.fulfill({ json: { jobId: 'jpdf', status: 'queued' } });
       return route.fallback();
     });
     let c = 0;
-    await page.route('**/export-jobs/jpdf', async (route) => {
+    await page.route('**/export-jobs/jpdf', async (route, req) => {
+      const { pathname } = new URL(req.url());
+      if (pathname !== '/export-jobs/jpdf') return route.fallback();
       c++;
       if (c < 2) return route.fulfill({ json: { jobId: 'jpdf', status: 'processing' } });
       return route.fulfill({ json: { jobId: 'jpdf', status: 'completed', downloadUrl: '/exports/jpdf.pdf' } });

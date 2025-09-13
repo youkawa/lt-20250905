@@ -4,6 +4,8 @@ test.describe('Report Editor E2E - PPTX export', () => {
   test('loads report, autosaves title, exports PPTX and shows download link', async ({ page }) => {
     // API routes mock
     await page.route('**/reports/r1', async (route, request) => {
+      const { pathname } = new URL(request.url());
+      if (pathname !== '/reports/r1') return route.fallback();
       if (request.method() === 'GET') {
         return route.fulfill({ json: { id: 'r1', projectId: 'p1', title: 'Report', content: [] } });
       }
@@ -13,15 +15,27 @@ test.describe('Report Editor E2E - PPTX export', () => {
       }
       return route.fallback();
     });
-    await page.route('**/projects/p1/reports**', (route) => route.fulfill({ json: { items: [], take: 20, nextCursor: null, hasMore: false } }));
-    await page.route('**/templates', (route) => route.fulfill({ json: [] }));
+    await page.route('**/projects/p1/reports**', (route, request) => {
+      const { pathname } = new URL(request.url());
+      if (!pathname.startsWith('/projects/p1/reports')) return route.fallback();
+      return route.fulfill({ json: { items: [], take: 20, nextCursor: null, hasMore: false } });
+    });
+    await page.route('**/templates', (route, request) => {
+      const { pathname } = new URL(request.url());
+      if (pathname === '/templates') return route.fulfill({ json: [] });
+      return route.fallback();
+    });
     await page.route('**/exports', async (route, request) => {
+      const { pathname } = new URL(request.url());
+      if (pathname !== '/exports') return route.fallback();
       if (request.method() === 'POST') return route.fulfill({ json: { jobId: 'j1', status: 'queued' } });
       return route.fallback();
     });
     // export-jobs: 1回目 processing, 2回目 completed
     let poll = 0;
-    await page.route('**/export-jobs/j1', async (route) => {
+    await page.route('**/export-jobs/j1', async (route, request) => {
+      const { pathname } = new URL(request.url());
+      if (pathname !== '/export-jobs/j1') return route.fallback();
       poll++;
       if (poll < 2) return route.fulfill({ json: { jobId: 'j1', status: 'processing' } });
       return route.fulfill({ json: { jobId: 'j1', status: 'completed', downloadUrl: '/exports/j1.pptx' } });
