@@ -35,6 +35,8 @@ docker-compose.override.yml
 # Exports
 exports/**
 !exports/.gitkeep
+apps/notebook-service/exports/**
+!apps/notebook-service/exports/.gitkeep
 
 # Uploads
 uploads/**
@@ -53,3 +55,6 @@ yarn-error.log*
 # Playwright artifacts
 **/playwright-report/
 **/test-results/
+
+# Serena project metadata
+.serena/
