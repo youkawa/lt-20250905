@@ -2,13 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState, type ComponentType } from 'react';
 import { PlotlyOutput } from './PlotlyOutput';
-
-type CodeOutput = {
-  output_type: string;
-  text?: string;
-  data?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
-};
+import type { CodeOutput } from '@/types/api';
 
 type JupyterModule = { Output?: ComponentType<{ output: CodeOutput }> } | null;
 

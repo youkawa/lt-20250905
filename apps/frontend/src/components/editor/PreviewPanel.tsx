@@ -3,8 +3,9 @@
 import { markdownToSafeHtml } from '@/lib/markdown';
 import { JupyterOutput } from '@/components/jupyter/JupyterOutput';
 import { sanitizeHtml } from '@/lib/html';
+import type { ReportContentItem, CodeOutput } from '@/types/api';
 
-export function PreviewPanel({ items }: { items: any[] }) {
+export function PreviewPanel({ items }: { items: ReportContentItem[] }) {
   return (
     <section className="space-y-2">
       <div className="font-semibold">プレビュー</div>
@@ -26,7 +27,7 @@ export function PreviewPanel({ items }: { items: any[] }) {
                 <pre className="text-sm whitespace-pre-wrap bg-slate-50 p-2 rounded border">{it.source}</pre>
                 {Array.isArray(it.outputs) && it.outputs.length > 0 && (
                   <div className="text-xs text-slate-700 mt-2 space-y-2">
-                    {it.outputs.map((o: any, i: number) => (
+                    {it.outputs.map((o: CodeOutput, i: number) => (
                       <div key={i} className="border rounded p-2">
                         <JupyterOutput output={o} />
                       </div>

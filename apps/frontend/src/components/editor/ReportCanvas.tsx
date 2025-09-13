@@ -19,16 +19,15 @@ import { useMemo } from 'react';
 import { markdownToSafeHtml } from '@/lib/markdown';
 import { sanitizeHtml } from '@/lib/html';
 import { JupyterOutput } from '@/components/jupyter/JupyterOutput';
-
-type Item = any;
+import type { ReportContentItem, CodeOutput } from '@/types/api';
 
 export function ReportCanvas({
   items,
   onReorder,
   onRemove,
 }: {
-  items: Item[];
-  onReorder: (next: Item[]) => void;
+  items: ReportContentItem[];
+  onReorder: (next: ReportContentItem[]) => void;
   onRemove: (index: number) => void;
 }) {
   const sensors = useSensors(
@@ -70,7 +69,7 @@ function SortableRow({
 }: {
   id: string;
   index: number;
-  item: Item;
+  item: ReportContentItem;
   onRemove: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -98,7 +97,7 @@ function SortableRow({
               <pre className="text-sm whitespace-pre-wrap bg-slate-50 p-2 rounded border">{item.source}</pre>
               {Array.isArray(item.outputs) && item.outputs.length > 0 && (
                 <div className="text-xs text-slate-700 mt-2 space-y-2">
-                  {item.outputs.map((o: any, i: number) => (
+                  {item.outputs.map((o: CodeOutput, i: number) => (
                     <div key={i} className="border rounded p-2">
                       <JupyterOutput output={o} />
                     </div>

@@ -49,7 +49,7 @@ export function NotebookSelectorPanel({
                 {c.cell_type === 'markdown' ? (
                   <div
                     className="prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: markdownToSafeHtml((c as any).source || '') }}
+                    dangerouslySetInnerHTML={{ __html: markdownToSafeHtml(c.source || '') }}
                   />
                 ) : (
                   <pre className="whitespace-pre-wrap text-sm bg-slate-50 p-2 rounded border">{c.source}</pre>

@@ -17,7 +17,6 @@ export interface Project {
   updatedAt: string;
 }
 
-export type ReportContentItem = Record<string, unknown>; // 最小限の安全な表現（後続で詳細化）
 
 export interface Report {
   id: string;
@@ -55,14 +54,17 @@ export type ParsedNotebook = {
         index: number;
         cell_type: 'code';
         source: string;
-        outputs: Array<{
-          output_type: string;
-          text?: string;
-          data?: Record<string, unknown>;
-          metadata?: Record<string, unknown>;
-        }>;
+        outputs: Array<CodeOutput>;
       }
   >;
+};
+
+// Jupyter Code cell output (minimal nbformat-like)
+export type CodeOutput = {
+  output_type: string;
+  text?: string;
+  data?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 };
 
 // Templates (admin)
@@ -80,3 +82,24 @@ export interface Template {
   createdAt: string;
   updatedAt?: string;
 }
+
+// Report content union (frontend <-> API)
+export type NotebookMarkdownItem = {
+  type: 'notebook_markdown';
+  source: string;
+  origin?: { notebookName: string; cellIndex: number };
+};
+
+export type NotebookCodeItem = {
+  type: 'notebook_code';
+  source: string;
+  outputs: CodeOutput[];
+  origin?: { notebookName: string; cellIndex: number };
+};
+
+export type TextBoxItem = {
+  type: 'text_box';
+  content: string;
+};
+
+export type ReportContentItem = NotebookMarkdownItem | NotebookCodeItem | TextBoxItem;

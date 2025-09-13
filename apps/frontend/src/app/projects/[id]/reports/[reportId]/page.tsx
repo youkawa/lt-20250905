@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Report, Template } from '@/types/api';
+import type { Report, Template, ReportContentItem, CodeOutput } from '@/types/api';
 import { ReportsApi, ExportApi, ExportJobsApi, TemplatesApi } from '@/lib/api';
 import { useAutoSave } from '@/lib/hooks';
 import { toDisplayMessage } from '@/lib/errors';
@@ -12,7 +12,7 @@ import { NotebookSelectorPanel } from '@/components/editor/NotebookSelectorPanel
 import { PreviewPanel } from '@/components/editor/PreviewPanel';
 import { Toast } from '@/components/core/Toast';
 
-type ContentItem = any; // Report.content の簡易表現
+type ContentItem = ReportContentItem; // Report.content の厳密表現
 
 export default function ReportDetailPage() {
   const params = useParams<{ id: string; reportId: string }>();
@@ -41,7 +41,7 @@ export default function ReportDetailPage() {
         const rep = await ReportsApi.get(reportId);
         setBase(rep);
         titleAuto.setValue(rep.title);
-        contentAuto.setValue((rep.content as any[]) || []);
+        contentAuto.setValue(rep.content || []);
       } catch (e) {
         setLoadError(toDisplayMessage(e));
       } finally {
@@ -62,7 +62,7 @@ export default function ReportDetailPage() {
   // 解析セルの一時保持は未使用のため削除
   const [exporting, setExporting] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [jobInfo, setJobInfo] = useState<any | null>(null);
+  const [jobInfo, setJobInfo] = useState<{ jobId: string; status: string; downloadUrl?: string; error?: string; errorCode?: string } | null>(null);
   const [errorInfo, setErrorInfo] = useState<{ code?: string; message?: string } | null>(null);
   const [templateId, setTemplateId] = useState<string>("");
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -76,7 +76,7 @@ export default function ReportDetailPage() {
         const list = await TemplatesApi.list();
         setTemplates(list);
         // 初期値: 既定があればそれを選択
-        const def = list.find((t: any) => t?.content?.isDefault);
+        const def = list.find((t) => t?.content?.isDefault);
         if (def) setTemplateId(def.id);
       } catch (_) {
         // non-adminの場合は一覧取得に失敗する可能性があるが、黙って無視
@@ -112,8 +112,8 @@ export default function ReportDetailPage() {
         setDownloadUrl(`${process.env.NEXT_PUBLIC_NOTEBOOK_BASE_URL || 'http://localhost:8000'}${job.downloadUrl}`);
         setErrorInfo(null);
       } else {
-        const code = (job as any)?.errorCode as string | undefined;
-        const msg = (job as any)?.error as string | undefined;
+        const code = job?.errorCode;
+        const msg = job?.error;
         setErrorInfo({ code, message: humanizeErrorCode(code, msg) });
       }
     } catch (err) {
@@ -153,18 +153,18 @@ export default function ReportDetailPage() {
         </div>
         <ReportCanvas
           items={contentAuto.value}
-          onReorder={(next) => contentAuto.setValue(next as any)}
+          onReorder={(next) => contentAuto.setValue(next)}
           onRemove={(idx) => contentAuto.update((prev) => prev.filter((_, i) => i !== idx))}
         />
       </div>
 
       <NotebookSelectorPanel
         onAddCell={(c, notebookName) => {
-          const base =
+          const base: ContentItem =
             c.cell_type === 'markdown'
-              ? { type: 'notebook_markdown', source: (c as any).source }
-              : { type: 'notebook_code', source: (c as any).source, outputs: (c as any).outputs };
-          const item: any = { ...base, origin: { notebookName, cellIndex: (c as any).index } };
+              ? { type: 'notebook_markdown', source: c.source }
+              : { type: 'notebook_code', source: c.source, outputs: c.outputs as CodeOutput[] };
+          const item: ContentItem = { ...base, origin: { notebookName, cellIndex: c.index } };
           contentAuto.update((prev) => [...prev, item]);
         }}
       />
@@ -186,7 +186,7 @@ export default function ReportDetailPage() {
               onChange={(e) => setTemplateId(e.target.value)}
             >
               <option value="">未選択（テンプレートなし）</option>
-              {templates.map((t: any) => (
+              {templates.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.title} v{t.version}{t?.content?.isDefault ? '（既定）' : ''}
                 </option>
@@ -200,7 +200,7 @@ export default function ReportDetailPage() {
         <div className="font-semibold">エクスポート</div>
         <div className="flex items-center gap-3">
           <label className="text-sm text-slate-700">形式</label>
-          <select className="border rounded px-2 py-1" value={format} onChange={(e) => setFormat(e.target.value as any)}>
+          <select className="border rounded px-2 py-1" value={format} onChange={(e) => setFormat(e.target.value as 'pptx' | 'pdf')}>
             <option value="pptx">PPTX</option>
             <option value="pdf">PDF</option>
           </select>

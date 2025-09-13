@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Report } from '@/types/api';
 import { ReportsApi } from '@/lib/api';
+import { toDisplayMessage } from '@/lib/errors';
 
 export default function ProjectReportsPage() {
   const params = useParams<{ id: string }>();
@@ -36,11 +37,17 @@ export default function ProjectReportsPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = (await ReportsApi.listByProject(projectId, { page, pageSize })) as any;
-        setItems(res.items);
-        setTotal(res.total);
-      } catch (e: any) {
-        setError(e.message || '取得に失敗しました');
+        const res = await ReportsApi.listByProject(projectId, { page, pageSize });
+        if ('total' in res) {
+          setItems(res.items);
+          setTotal(res.total);
+        } else {
+          // カーソル型の場合は件数不明のため暫定動作
+          setItems(res.items);
+          setTotal(res.items.length);
+        }
+      } catch (e) {
+        setError(toDisplayMessage(e));
       } finally {
         setLoading(false);
       }
@@ -58,8 +65,8 @@ export default function ProjectReportsPage() {
       setPage(1);
       setItems((prev) => [rep, ...prev]);
       setTitle('');
-    } catch (e: any) {
-      setError(e.message || '作成に失敗しました');
+    } catch (e) {
+      setError(toDisplayMessage(e));
     } finally {
       setCreating(false);
     }
