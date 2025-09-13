@@ -1,7 +1,21 @@
 import { Injectable } from '@nestjs/common';
 
-type BullQueue = any;
-type BullJob = any;
+type BullQueue = {
+  add: (name: string, payload: unknown, opts?: Record<string, unknown>) => Promise<BullJob>;
+  getJob: (id: string) => Promise<BullJob | null>;
+};
+type BullJob = {
+  id: string | number;
+  opts: { attempts?: number };
+  attemptsMade?: number;
+  timestamp?: number;
+  processedOn?: number;
+  finishedOn?: number;
+  getState: () => Promise<string>;
+  getProgress: () => Promise<number>;
+  returnvalue?: unknown;
+  failedReason?: string;
+};
 
 function getBull(): { Queue: BullQueue; Worker: any; QueueEvents: any } {
   // dynamic require to avoid build-time dependency in non-bull environments
@@ -12,7 +26,7 @@ function getBull(): { Queue: BullQueue; Worker: any; QueueEvents: any } {
 
 @Injectable()
 export class BullExportQueueService {
-  private queue: any;
+  private queue: BullQueue;
   private name = 'exports';
   constructor() {
     const { Queue } = getBull();
@@ -28,7 +42,7 @@ export class BullExportQueueService {
     return { host, port };
   }
 
-  async enqueueExport(payload: any) {
+  async enqueueExport(payload: unknown) {
     const attempts = Number(process.env.EXPORT_JOB_ATTEMPTS || '2');
     const backoff = Number(process.env.EXPORT_JOB_BACKOFF_MS || '1000');
     const job: BullJob = await this.queue.add('export', payload, {
@@ -59,7 +73,7 @@ export class BullExportQueueService {
       return { jobId: String(job.id), status: 'failed' as const, error: job.failedReason, errorCode: 'WORKER_FAILED', progress, attemptsMade, attemptsMax, createdAt, startedAt, finishedAt, durationMs };
     }
     const status = state === 'active' ? 'processing' : 'queued';
-    return { jobId: String(job.id), status, progress, attemptsMade, attemptsMax, createdAt, startedAt } as any;
+    return { jobId: String(job.id), status, progress, attemptsMade, attemptsMax, createdAt, startedAt } as const;
   }
 
   // no-op to keep interface compatibility

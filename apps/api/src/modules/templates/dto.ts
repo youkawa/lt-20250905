@@ -1,6 +1,18 @@
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export type TemplateRule = { projectId?: string; titlePattern?: string; isDefault?: boolean; createdAt?: string };
+export type TemplateContent = {
+  storagePath?: string;
+  originalName?: string;
+  mimeType?: string;
+  size?: number;
+  uploadedAt?: string;
+  filename?: string;
+  isDefault?: boolean;
+  rules?: TemplateRule[];
+} & Record<string, unknown>;
+
 export class CreateTemplateDto {
   @IsString()
   @IsNotEmpty()
@@ -11,7 +23,7 @@ export class CreateTemplateDto {
   version!: number;
 
   // Json content (template metadata or structure reference)
-  content!: any;
+  content!: TemplateContent;
 }
 
 export class UpdateTemplateDto {
@@ -25,7 +37,7 @@ export class UpdateTemplateDto {
   version?: number;
 
   @IsOptional()
-  content?: any;
+  content?: TemplateContent;
 }
 
 export class UploadTemplateDto {

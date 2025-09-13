@@ -17,18 +17,24 @@ export class ExportWorkerService {
       const p = (payload as Payload) || {};
       const userId = typeof p.userId === 'string' ? p.userId : undefined;
       const res = await this.exportsService.startExport(payload, userId);
-      if (res?.status === 'completed') { try { this.metrics.jobsCompleted.inc(); } catch (_) {} return { status: 'completed', downloadUrl: res.downloadUrl }; }
-      if (res?.status === 'failed') { try { this.metrics.jobsFailed.inc(); } catch (_) {} return { status: 'failed', error: res.error, errorCode: res.errorCode }; }
+      if (res?.status === 'completed') {
+        try { this.metrics.jobsCompleted.inc(); } catch { /* noop */ }
+        return { status: 'completed', downloadUrl: res.downloadUrl };
+      }
+      if (res?.status === 'failed') {
+        try { this.metrics.jobsFailed.inc(); } catch { /* noop */ }
+        return { status: 'failed', error: res.error, errorCode: res.errorCode };
+      }
       // If notebook-service returns queued/processing, treat as completed without URL (or polling strategy could be added)
-      try { this.metrics.jobsCompleted.inc(); } catch (_) {}
+      try { this.metrics.jobsCompleted.inc(); } catch { /* noop */ }
       return { status: 'completed', downloadUrl: res?.downloadUrl };
     });
     if (result && typeof result.durationMs === 'number') {
-      try { this.metrics.jobDuration.observe(result.durationMs); } catch (_) {}
+      try { this.metrics.jobDuration.observe(result.durationMs); } catch { /* noop */ }
     }
     if (result?.status === 'failed') {
       const code = result.errorCode || 'WORKER_FAILED';
-      try { this.metrics.jobsFailedByCode.labels(String(code)).inc(); } catch (_) {}
+      try { this.metrics.jobsFailedByCode.labels(String(code)).inc(); } catch { /* noop */ }
     }
   }
 }

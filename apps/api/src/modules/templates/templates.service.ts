@@ -39,16 +39,16 @@ export class TemplatesService {
     if (!hasScope) {
       // グローバル既定: 既存のisDefaultを全解除し、対象のみtrue
       for (const t of all) {
-        const content = (t.content as any) || {};
-        const next = { ...content } as any;
+        const content = (t.content as Record<string, unknown>) || {};
+        const next = { ...content } as Record<string, unknown>;
         next.isDefault = t.id === id;
-        await this.prisma.template.update({ where: { id: t.id }, data: { content: next as any } });
+        await this.prisma.template.update({ where: { id: t.id }, data: { content: next } });
       }
       return { ok: true };
     }
     // スコープ付き既定: content.rules にルールを追加
-    const content = (target.content as any) || {};
-    const rules = Array.isArray(content.rules) ? content.rules : [];
+    const content = (target.content as Record<string, unknown>) || {};
+    const rules = Array.isArray((content as any).rules) ? (content as any).rules as any[] : [];
     rules.push({ projectId: rule?.projectId, titlePattern: rule?.titlePattern, isDefault: true, createdAt: new Date().toISOString() });
     content.rules = rules;
     await this.prisma.template.update({ where: { id }, data: { content } });

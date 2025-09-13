@@ -1,4 +1,7 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export type ReportContentItem = unknown;
+export type ReportMetadata = Record<string, unknown>;
 
 export class CreateReportDto {
   @IsString()
@@ -9,11 +12,12 @@ export class CreateReportDto {
   @IsNotEmpty()
   title!: string;
 
-  // content は Json として受ける（DTOでは any）
-  content!: any;
+  // content は Json として受ける
+  @IsArray()
+  content!: ReportContentItem[];
 
   @IsOptional()
-  metadata?: any;
+  metadata?: ReportMetadata;
 }
 
 export class UpdateReportDto {
@@ -21,10 +25,11 @@ export class UpdateReportDto {
   @IsString()
   title?: string;
   @IsOptional()
-  content?: any;
+  @IsArray()
+  content?: ReportContentItem[];
 
   @IsOptional()
-  metadata?: any;
+  metadata?: ReportMetadata;
 }
 
 export class PaginationQuery {

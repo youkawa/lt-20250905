@@ -20,9 +20,10 @@ export class AuthGuard implements CanActivate {
       const token = authz.slice(7).trim();
       const secret = process.env.JWT_SECRET || 'dev-secret';
       try {
+        type Claims = JwtPayload & { userId?: string; id?: string };
         const payload = verify(token, secret) as JwtPayload | string;
-        const obj = typeof payload === 'string' ? {} : payload;
-        const sub = (obj as any)?.sub || (obj as any)?.userId || (obj as any)?.id;
+        const obj: Claims = typeof payload === 'string' ? {} as Claims : (payload as Claims);
+        const sub = obj.sub ?? obj.userId ?? obj.id;
         if (sub) {
           req.user = { id: String(sub) };
           return true;

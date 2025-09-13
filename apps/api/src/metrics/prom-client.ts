@@ -1,18 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 // Runtime wrapper for prom-client: use real module if available, otherwise provide a no-op stub.
 // This file uses ES exports so TypeScript treats it as a module.
 
-type CtorArg = any;
+type CtorArg = unknown;
 
 class StubRegistry { metrics(): string { return ''; } }
-class StubCounter<T = any> { constructor(_opts: CtorArg) {} inc(_v?: number): void {} labels(_l?: string): any { return this; } }
-class StubHistogram<T = any> { constructor(_opts: CtorArg) {} observe(_v: number): void {} }
-function stubCollectDefaultMetrics(_opts?: any): void {}
+class StubCounter { constructor(_opts: CtorArg) {} inc(_v?: number): void {} labels(_l?: string): StubCounter { return this; } }
+class StubHistogram { constructor(_opts: CtorArg) {} observe(_v: number): void {} }
+function stubCollectDefaultMetrics(_opts?: unknown): void {}
 
 // Default to stubs
-let _Registry: any = StubRegistry;
-let _Counter: any = StubCounter;
-let _Histogram: any = StubHistogram;
-let _collectDefaultMetrics: any = stubCollectDefaultMetrics;
+let _Registry: unknown = StubRegistry;
+let _Counter: unknown = StubCounter;
+let _Histogram: unknown = StubHistogram;
+let _collectDefaultMetrics: unknown = stubCollectDefaultMetrics;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -25,7 +26,7 @@ try {
   // keep stubs
 }
 
-export const Registry = _Registry as new (...args: any[]) => any;
-export const Counter = _Counter as new (...args: any[]) => any;
-export const Histogram = _Histogram as new (...args: any[]) => any;
-export const collectDefaultMetrics = _collectDefaultMetrics as (...args: any[]) => any;
+export const Registry = _Registry as new (...args: unknown[]) => any;
+export const Counter = _Counter as new (...args: unknown[]) => any;
+export const Histogram = _Histogram as new (...args: unknown[]) => any;
+export const collectDefaultMetrics = _collectDefaultMetrics as (...args: unknown[]) => any;

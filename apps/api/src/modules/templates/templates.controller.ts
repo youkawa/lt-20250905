@@ -42,8 +42,7 @@ export class TemplatesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
-    // 型定義の有無に依存せず動作させるため any を使用（テスト時の型エラー回避）
-    @UploadedFile() file: any,
+    @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadTemplateDto,
   ) {
     if (!file) throw new BadRequestException('file is required');
