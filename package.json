@@ -19,7 +19,7 @@
     "lint:fix": "eslint \"apps/**/*.{ts,tsx,js}\" --fix",
     "lint:frontend": "eslint \"apps/frontend/src/**/*.{ts,tsx,js}\"",
     "lint:api": "eslint \"apps/api/src/**/*.ts\"",
-    "ci:local": "npm run lint:frontend && npm run lint:api && cd apps/frontend && npm run build && npm test && npm run test:e2e && cd ../api && npm run build && npm test && cd ../../apps/notebook-service && pytest -q"
+    "ci:local": "npm run lint:frontend && npm run lint:api && cd apps/frontend && npm run build && npm test && npm run test:e2e && cd ../api && npm run build && npm test && cd ../../apps/notebook-service && pytest -q",
     "format": "echo 'Run per workspace'",
     "test": "echo 'Run per workspace'"
   },
