@@ -1,5 +1,5 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export type TemplateRule = { projectId?: string; titlePattern?: string; isDefault?: boolean; createdAt?: string };
 export type TemplateContent = {

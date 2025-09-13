@@ -2,15 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { TemplatesApi } from '@/lib/api';
+import type { Template } from '@/types/api';
 import { toDisplayMessage } from '@/lib/errors';
 
-type Template = {
-  id: string;
-  title: string;
-  version: number;
-  content: any;
-  createdAt: string;
-};
+// 型は共有定義を使用
 
 export default function AdminTemplatesPage() {
   const [items, setItems] = useState<Template[]>([]);
@@ -182,7 +177,7 @@ export default function AdminTemplatesPage() {
               await TemplatesApi.setDefault(defaultTplId, {
                 projectId: ruleProjectId || undefined,
                 titlePattern: ruleTitlePattern || undefined,
-              } as any);
+              });
               setRuleProjectId('');
               setRuleTitlePattern('');
               await load();

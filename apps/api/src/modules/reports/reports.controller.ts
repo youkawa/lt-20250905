@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 
-import { CurrentUser } from '../../common/auth/user.decorator';
 import { CreateReportDto, UpdateReportDto } from './dto';
 import { ReportsService } from './reports.service';
+import { CurrentUser } from '../../common/auth/user.decorator';
 
 @Controller('reports')
 export class ReportsController {

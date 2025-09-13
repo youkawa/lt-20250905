@@ -119,6 +119,8 @@ cd ../..
   uvicorn app.main:app --reload --port 8000
   ```
 
+メモ: Notebook Service のpytest実行時は、インポート解決のため `PYTHONPATH=.` を指定することがあります（CIでも同様に設定）。
+
 ---
 
 ## 📚 APIエンドポイント概要
@@ -163,7 +165,7 @@ cd ../..
 
 - ワークフロー: `.github/workflows/ci.yml`
 - ジョブ構成:
-  - Lint (ESLint): `apps/frontend/src` に加え、API `apps/api/src` も対象（stage 2）。現状は警告（import/order）は許容し、エラーはゼロを維持。
+  - Lint (ESLint): `apps/frontend/src` と `apps/api/src` を対象。警告ゼロを強制（warnings もCI失敗扱い）。フロントは段階移行のため `import/order` は一時無効、`no-unused-vars` は有効化済み、`no-explicit-any` は今後有効化予定。
   - Frontend Unit: Next.js 本番ビルド（型チェック有効）→ Vitest 実行。
   - Frontend E2E: Playwright ブラウザをセットアップし、E2E を実行。レポートをアーティファクトに保存。
   - API (Jest): API を `npm run build` で型チェック後、Jest 実行。

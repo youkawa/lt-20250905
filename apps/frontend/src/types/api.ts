@@ -64,3 +64,19 @@ export type ParsedNotebook = {
       }
   >;
 };
+
+// Templates (admin)
+export type TemplateContent = {
+  filename?: string;
+  originalName?: string;
+  isDefault?: boolean;
+} & Record<string, unknown>;
+
+export interface Template {
+  id: string;
+  title: string;
+  version: number;
+  content: TemplateContent;
+  createdAt: string;
+  updatedAt?: string;
+}

@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { AdminGuard } from '../../common/auth/admin.guard';
 import { CreateTemplateDto, UpdateTemplateDto, UploadTemplateDto, SetDefaultDto } from './dto';
 import { TemplatesService } from './templates.service';
+import { AdminGuard } from '../../common/auth/admin.guard';
 
 @Controller('templates')
 export class TemplatesController {
@@ -43,7 +44,7 @@ export class TemplatesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
-    @UploadedFile() file: any,
+    @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadTemplateDto,
   ) {
     if (!file) throw new BadRequestException('file is required');

@@ -8,6 +8,7 @@ import type {
   ReportContentItem,
   ParsedNotebook,
   User,
+  Template,
 } from '../types/api';
 
 // Projects
@@ -102,9 +103,9 @@ export const ExportApi = {
 
 // Templates (admin)
 export const TemplatesApi = {
-  list(): Promise<any[]> {
+  list(): Promise<Template[]> {
     const url = `${apiConfig.apiBaseUrl}/templates`;
-    return request<any[]>(url, { headers: buildAuthHeaders() });
+    return request<Template[]>(url, { headers: buildAuthHeaders() });
   },
   async upload(file: File, title: string, version: number): Promise<{ id: string }> {
     const fd = new FormData();

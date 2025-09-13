@@ -59,7 +59,11 @@ module.exports = {
       rules: {
         'import/order': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
+        // 段階導入: まず未使用変数をエラー化
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+        ],
       },
     },
   ],

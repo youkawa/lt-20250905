@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Report } from '@/types/api';
+import type { Report, Template } from '@/types/api';
 import { ReportsApi, ExportApi, ExportJobsApi, TemplatesApi } from '@/lib/api';
 import { useAutoSave } from '@/lib/hooks';
 import { toDisplayMessage } from '@/lib/errors';
@@ -18,7 +18,7 @@ export default function ReportDetailPage() {
   const params = useParams<{ id: string; reportId: string }>();
   const projectId = params?.id as string;
   const reportId = params?.reportId as string;
-  const router = useRouter();
+  // router 未使用のため削除
 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -59,13 +59,13 @@ export default function ReportDetailPage() {
     return '';
   }, [titleAuto.saving, contentAuto.saving, titleAuto.error, contentAuto.error, titleAuto.savedAt, contentAuto.savedAt]);
 
-  const [parsedCells, setParsedCells] = useState<any[]>([]);
+  // 解析セルの一時保持は未使用のため削除
   const [exporting, setExporting] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [jobInfo, setJobInfo] = useState<any | null>(null);
   const [errorInfo, setErrorInfo] = useState<{ code?: string; message?: string } | null>(null);
   const [templateId, setTemplateId] = useState<string>("");
-  const [templates, setTemplates] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [tplLoading, setTplLoading] = useState(false);
   const [format, setFormat] = useState<'pptx' | 'pdf'>('pptx');
 
@@ -87,13 +87,7 @@ export default function ReportDetailPage() {
     fetchTemplates();
   }, []);
 
-  const addCellToContent = (cell: any) => {
-    const item: any =
-      cell.cell_type === 'markdown'
-        ? { type: 'notebook_markdown', source: cell.source }
-        : { type: 'notebook_code', source: cell.source, outputs: cell.outputs };
-    contentAuto.update((prev) => [...prev, item]);
-  };
+  // 直接 NotebookSelectorPanel 側の onAddCell で反映するため関数を削除
 
   const onExport = async () => {
     if (!base) return;
