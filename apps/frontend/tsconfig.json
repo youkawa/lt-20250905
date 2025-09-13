@@ -18,7 +18,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@datalayer/jupyter-ui": ["./src/test/__mocks__/jupyter-ui.ts"]
     },
     "incremental": true,
     "plugins": [

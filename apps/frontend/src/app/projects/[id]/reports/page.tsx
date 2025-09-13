@@ -10,7 +10,7 @@ export default function ProjectReportsPage() {
   const params = useParams<{ id: string }>();
   const projectId = params?.id as string;
   const search = useSearchParams();
-  const pageFromQuery = Number(search.get('page') || '1');
+  const pageFromQuery = Number((search?.get('page') ?? '1'));
   const router = useRouter();
 
   const [page, setPage] = useState<number>(pageFromQuery > 0 ? pageFromQuery : 1);
@@ -25,7 +25,7 @@ export default function ProjectReportsPage() {
   const maxPage = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
 
   useEffect(() => {
-    const qp = new URLSearchParams(Array.from(search.entries()));
+    const qp = new URLSearchParams(search ? Array.from(search.entries()) : []);
     qp.set('page', String(page));
     router.replace(`?${qp.toString()}`);
   }, [page]);
